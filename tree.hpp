@@ -1,199 +1,211 @@
-// tree.hpp
 #ifndef TREE_HPP
 #define TREE_HPP
 
 #include "node.hpp"
-#include <queue>
 #include <stack>
-#include <iterator>
+#include <queue>
+#include <iostream>
 
-template<typename T>
 class Tree {
 private:
-    Node<T>* root;
+    void* root;
 
 public:
     Tree() : root(nullptr) {}
 
+    template <typename T>
     void add_root(Node<T>* root_node) {
-        root = root_node;
+        root = static_cast<void*>(root_node);
+        std::cout << "Added root node with value: " << root_node->get_value() << std::endl;
     }
 
-    void add_sub_node(Node<T>* parent, Node<T>* child) {
-        if (parent) {
-            parent->add_child(child);
+    template <typename T>
+    Node<T>* get_root() const {
+        return static_cast<Node<T>*>(root);
+    }
+
+    template <typename T, typename U>
+    void add_sub_node(Node<T>* parent, Node<U>* child) {
+        if (parent && child) {
+            parent->add_child(static_cast<void*>(child));
+            std::cout << "Added child node with value: " << child->get_value() << " to parent node with value: " << parent->get_value() << std::endl;
+        } else {
+            std::cerr << "Error: Parent or child node is null!" << std::endl;
         }
     }
 
     // Pre-order iterator
-    class PreOrderIterator : public std::iterator<std::input_iterator_tag, Node<T>> {
-        std::stack<Node<T>*> nodes;
+    template <typename T>
+    class PreOrderIterator {
+    private:
+        std::stack<Node<T>*> next;
 
     public:
-        PreOrderIterator(Node<T>* root) {
+        explicit PreOrderIterator(Node<T>* root) {
             if (root) {
-                nodes.push(root);
+                next.push(root);
+                std::cout << "Initialized PreOrderIterator with root node: " << root->get_value() << std::endl;
             }
         }
 
-        bool operator!=(const PreOrderIterator &other) const {
-            return !nodes.empty() || !other.nodes.empty();
+        Node<T>* operator*() {
+            return next.top();
         }
 
-        Node<T>* operator*() const {
-            return nodes.top();
-        }
+        PreOrderIterator& operator++() {
+            Node<T>* currentNode = next.top();
+            next.pop();
+            std::cout << "Popped node with value: " << currentNode->get_value() << std::endl;
 
-        PreOrderIterator &operator++() {
-            auto current = nodes.top();
-            nodes.pop();
-            for (auto it = current->children.rbegin(); it != current->children.rend(); ++it) {
-                nodes.push(*it);
-            }
-            return *this;
-        }
-    };
-
-    PreOrderIterator begin_pre_order() {
-        return PreOrderIterator(root);
-    }
-
-    PreOrderIterator end_pre_order() {
-        return PreOrderIterator(nullptr);
-    }
-
-    // Post-order iterator
-    class PostOrderIterator : public std::iterator<std::input_iterator_tag, Node<T>> {
-        std::stack<Node<T>*> nodes;
-        std::stack<bool> visited;
-
-    public:
-        PostOrderIterator(Node<T>* root) {
-            if (root) {
-                nodes.push(root);
-                visited.push(false);
-            }
-        }
-
-        bool operator!=(const PostOrderIterator &other) const {
-            return !nodes.empty() || !other.nodes.empty();
-        }
-
-        Node<T>* operator*() const {
-            return nodes.top();
-        }
-
-        PostOrderIterator &operator++() {
-            while (!nodes.empty()) {
-                auto current = nodes.top();
-                bool visit = visited.top();
-                nodes.pop();
-                visited.pop();
-
-                if (visit) {
-                    return *this;
+            auto& children = currentNode->children;
+            for (auto it = children.rbegin(); it != children.rend(); ++it) {
+                Node<T>* childNode = static_cast<Node<T>*>(*it);
+                if (childNode) {
+                    std::cout << "Pushing child node with value: " << childNode->get_value() << std::endl;
+                    next.push(childNode);
                 } else {
-                    nodes.push(current);
-                    visited.push(true);
-                    for (auto it = current->children.rbegin(); it != current->children.rend(); ++it) {
-                        nodes.push(*it);
-                        visited.push(false);
-                    }
+                    std::cerr << "Error: Encountered null child node!" << std::endl;
                 }
             }
             return *this;
         }
+
+        bool operator!=(const PreOrderIterator& other) const {
+            return !next.empty();
+        }
     };
 
-    PostOrderIterator begin_post_order() {
-        return PostOrderIterator(root);
+    template <typename T>
+    PreOrderIterator<T> begin_pre_order() {
+        return PreOrderIterator<T>(get_root<T>());
     }
 
-    PostOrderIterator end_post_order() {
-        return PostOrderIterator(nullptr);
+    template <typename T>
+    PreOrderIterator<T> end_pre_order() {
+        return PreOrderIterator<T>(nullptr);
     }
 
-    // In-order iterator (for binary tree, here it acts similar to pre-order)
-    class InOrderIterator : public std::iterator<std::input_iterator_tag, Node<T>> {
-        std::stack<Node<T>*> nodes;
+    // Post-order iterator
+    template <typename T>
+    class PostOrderIterator {
+    private:
+        struct NodeInfo {
+            Node<T>* node;
+            bool isExpanded;
+            bool operator==(const NodeInfo& rhs) const {
+                return node == rhs.node && isExpanded == rhs.isExpanded;
+            }
+        };
+
+        std::stack<NodeInfo> next;
+
+        void expandTop() {
+            while (!next.top().isExpanded) {
+                next.top().isExpanded = true;
+                auto& children = next.top().node->children;
+                for (auto it = children.rbegin(); it != children.rend(); ++it) {
+                    Node<T>* childNode = static_cast<Node<T>*>(*it);
+                    if (childNode) {
+                        next.push({childNode, false});
+                    } else {
+                        std::cerr << "Error: Encountered null child node!" << std::endl;
+                    }
+                }
+            }
+        }
 
     public:
-        InOrderIterator(Node<T>* root) {
+        explicit PostOrderIterator(Node<T>* root) {
             if (root) {
-                nodes.push(root);
+                next.push({root, false});
+                expandTop();
+                std::cout << "Initialized PostOrderIterator with root node: " << root->get_value() << std::endl;
             }
         }
 
-        bool operator!=(const InOrderIterator &other) const {
-            return !nodes.empty() || !other.nodes.empty();
+        Node<T>* operator*() {
+            return next.top().node;
         }
 
-        Node<T>* operator*() const {
-            return nodes.top();
-        }
-
-        InOrderIterator &operator++() {
-            auto current = nodes.top();
-            nodes.pop();
-            for (auto it = current->children.rbegin(); it != current->children.rend(); ++it) {
-                nodes.push(*it);
-            }
+        PostOrderIterator& operator++() {
+            next.pop();
+            if (!next.empty()) expandTop();
             return *this;
+        }
+
+        bool operator!=(const PostOrderIterator& other) const {
+            return !next.empty();
         }
     };
 
-    InOrderIterator begin_in_order() {
-        return InOrderIterator(root);
+    template <typename T>
+    PostOrderIterator<T> begin_post_order() {
+        return PostOrderIterator<T>(get_root<T>());
     }
 
-    InOrderIterator end_in_order() {
-        return InOrderIterator(nullptr);
+    template <typename T>
+    PostOrderIterator<T> end_post_order() {
+        return PostOrderIterator<T>(nullptr);
     }
 
     // BFS iterator
-    class BFSIterator : public std::iterator<std::input_iterator_tag, Node<T>> {
-        std::queue<Node<T>*> nodes;
+    template <typename T>
+    class BFSIterator {
+    private:
+        std::queue<Node<T>*> queue;
 
     public:
-        BFSIterator(Node<T>* root) {
+        explicit BFSIterator(Node<T>* root) {
             if (root) {
-                nodes.push(root);
+                queue.push(root);
+                std::cout << "Initialized BFSIterator with root node: " << root->get_value() << std::endl;
             }
         }
 
-        bool operator!=(const BFSIterator &other) const {
-            return !nodes.empty() || !other.nodes.empty();
+        Node<T>* operator*() {
+            return queue.front();
         }
 
-        Node<T>* operator*() const {
-            return nodes.front();
-        }
-
-        BFSIterator &operator++() {
-            auto current = nodes.front();
-            nodes.pop();
-            for (const auto &child : current->children) {
-                nodes.push(child);
+        BFSIterator& operator++() {
+            Node<T>* node = queue.front();
+            queue.pop();
+            auto& children = node->children;
+            for (auto child : children) {
+                Node<T>* childNode = static_cast<Node<T>*>(child);
+                if (childNode) {
+                    std::cout << "Queueing child node with value: " << childNode->get_value() << std::endl;
+                    queue.push(childNode);
+                } else {
+                    std::cerr << "Error: Encountered null child node!" << std::endl;
+                }
             }
             return *this;
         }
+
+        bool operator!=(const BFSIterator& other) const {
+            return !queue.empty();
+        }
     };
 
-    BFSIterator begin_bfs_scan() {
-        return BFSIterator(root);
+    template <typename T>
+    BFSIterator<T> begin_bfs() {
+        return BFSIterator<T>(get_root<T>());
     }
 
-    BFSIterator end_bfs_scan() {
-        return BFSIterator(nullptr);
+    template <typename T>
+    BFSIterator<T> end_bfs() {
+        return BFSIterator<T>(nullptr);
     }
 
-    // BFS default iterator
-    BFSIterator begin() {
-        return begin_bfs_scan();
+    // Tree iterator (BFS by default)
+    template <typename T>
+    BFSIterator<T> begin() {
+        return begin_bfs<T>();
     }
 
-    BFSIterator end() {
-        return end_bfs_scan();
+    template <typename T>
+    BFSIterator<T> end() {
+        return end_bfs<T>();
     }
 };
 

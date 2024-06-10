@@ -10,25 +10,24 @@ using namespace std;
 
 int main()
 {
-
-    Node<string> root_node = Node("root");
+    Node<string> root_node = Node(string("root"));
     Tree tree;
-    tree.add_root(root_node);
+    tree.add_root(&root_node);
     Node<int> n1 = Node(1);
-    Node<string> n2 = Node("n2");
+    Node<string> n2 = Node(string("n2"));
     Node<double> n3 = Node(12.35);
-    Node<double> n4 = Node(1 / 4);
-    Node<string> n5 = Node("n5");
-    Node<string> n6 = Node("n6");
-    Node<string> n7 = Node("n7");
+    Node<double> n4 = Node(1 / 4.0);
+    Node<string> n5 = Node(string("n5"));
+    Node<string> n6 = Node(string("n6"));
+    Node<string> n7 = Node(string("n7"));
 
-    tree.add_sub_node(root_node, n1);
-    tree.add_sub_node(root_node, n2);
-    tree.add_sub_node(root_node, n3);
-    tree.add_sub_node(n1, n4);
-    tree.add_sub_node(n1, n5);
-    tree.add_sub_node(n2, n6);
-    tree.add_sub_node(n2, n7);
+    tree.add_sub_node(&root_node, &n1);
+    tree.add_sub_node(&root_node, &n2);
+    tree.add_sub_node(&root_node, &n3);
+    tree.add_sub_node(&n1, &n4);
+    tree.add_sub_node(&n1, &n5);
+    tree.add_sub_node(&n2, &n6);
+    tree.add_sub_node(&n2, &n7);
     // The tree should look like:
     /**
      * root
@@ -41,30 +40,23 @@ int main()
      * |__12.35
      */
 
-    for (auto node = tree.begin_pre_order(); node != tree.end_pre_order(); ++node)
-    {
-        cout << node->get_value() << endl;
-    } // prints: root, 1, 0.25, n5, n2, n6, n7, 12.35
+    // Pre-order traversal
+    std::cout << "Pre-order traversal:" << std::endl;
+    for (auto it = tree.begin_pre_order<string>(); it != tree.end_pre_order<string>(); ++it) {
+        std::cout << "Visiting node with value: " << (*it)->get_value() << std::endl;
+    }
 
-    for (auto node = tree.begin_post_order(); node != tree.end_post_order(); ++node)
-    {
-        cout << node->get_value() << endl;
-    } // prints: 0.25, n5, 1, n6, n7, n2, 12.35, root
+    // Post-order traversal
+    std::cout << "Post-order traversal:" << std::endl;
+    for (auto it = tree.begin_post_order<string>(); it != tree.end_post_order<string>(); ++it) {
+        std::cout << "Visiting node with value: " << (*it)->get_value() << std::endl;
+    }
 
-    for (auto node = tree.begin_in_order(); node != tree.end_in_order(); ++node)
-    {
-        cout << node->get_value() << endl;
-    } // prints: 0.25, 1, n5, root, n6, n2, n7, 12.35
+    // BFS traversal
+    std::cout << "BFS traversal:" << std::endl;
+    for (auto it = tree.begin_bfs<string>(); it != tree.end_bfs<string>(); ++it) {
+        std::cout << "Visiting node with value: " << (*it)->get_value() << std::endl;
+    }
 
-    for (auto node = tree.begin_bfs_scan(); node != tree.end_bfs_scan(); ++node)
-    {
-        cout << node->get_value() << endl;
-    } // prints: root, 1, n2, 12.35, 0.25, n5, n6, n7
-
-    for (auto node : tree)
-    {
-        cout << node.get_value() << endl;
-    } // same as BFS: root, 1, n2, 12.35, 0.25, n5, n6, n7
-
-    cout << tree; // Should print the graph using GUI.
+    return 0;
 }
