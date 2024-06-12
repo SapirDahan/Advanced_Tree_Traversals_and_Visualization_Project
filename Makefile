@@ -4,20 +4,21 @@
 # * Mail: sapirdahan2003@gmail.com
 #
 
-#!make -f
-
 CXX=g++
 CXXFLAGS=-std=c++17 -Werror -Wsign-conversion
 VALGRIND_FLAGS=-v --leak-check=full --show-leak-kinds=all --error-exitcode=99
 
-SOURCES=main.cpp
+# SFML library flags
+SFML_LIBS=-lsfml-graphics -lsfml-window -lsfml-system
+
+SOURCES=Demo.cpp
 OBJECTS=$(subst .cpp,.o,$(SOURCES))
 
 run: tree
 	./$^
 
-tree: Demo.o
-	$(CXX) $(CXXFLAGS) $^ -o tree
+tree: $(OBJECTS)
+	$(CXX) $(CXXFLAGS) $^ -o tree $(SFML_LIBS)
 
 test: TestCounter.o Tests.o $(OBJECTS)
 	$(CXX) $(CXXFLAGS) $^ -o test
@@ -30,7 +31,7 @@ cppcheck:
 	cppcheck $(SOURCES) --enable=all
 
 valgrind: tree
-	valgrind --tool=memcheck $(VALGRIND_FLAGS) ./demo 2>&1 | { egrep "lost| at " || true; }
+	valgrind --tool=memcheck $(VALGRIND_FLAGS) ./tree 2>&1 | { egrep "lost| at " || true; }
 
 %.o: %.cpp
 	$(CXX) $(CXXFLAGS) --compile $< -o $@

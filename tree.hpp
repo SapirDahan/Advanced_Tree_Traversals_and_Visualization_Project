@@ -11,67 +11,51 @@ class Tree {
 private:
     BaseNode* root;
 
-    void renderNode(sf::RenderWindow& window, BaseNode* node, float x, float y, float xOffset, sf::Font& font) const {
+    void renderNode(sf::RenderWindow& window, BaseNode* node, float x, float y, float xOffset, sf::Font& font, int depth) const {
         if (!node) return;
 
-        sf::CircleShape shape(20);
-        shape.setFillColor(sf::Color::Green);
-        shape.setPosition(x, y);
+        float radius = 30.0f;  // Circle radius
+        sf::CircleShape shape(radius);
+        shape.setFillColor(sf::Color::Blue);  // Change color to blue
+        shape.setPosition(x - radius, y - radius);
 
         sf::Text text;
         text.setFont(font);
         text.setString(node->get_value());
-        text.setCharacterSize(15);
+        text.setCharacterSize(20);  // Adjust text size
         text.setFillColor(sf::Color::White);
-        text.setPosition(x + 10, y + 10);
+
+        // Center the text
+        sf::FloatRect textRect = text.getLocalBounds();
+        text.setOrigin(textRect.left + textRect.width / 2.0f, textRect.top + textRect.height / 2.0f);
+        text.setPosition(x, y);
+
+        float childY = y + 2 * radius + 40;  // Adjust vertical distance between nodes
+        float adjustedXOffset = xOffset / (depth + 1);  // Adjust horizontal spread based on depth
+        if (depth == 1) adjustedXOffset = xOffset;  // Significant spread for the first level
+
+        float startX = x - (adjustedXOffset / 2);
+
+        for (size_t i = 0; i < node->children.size(); ++i) {
+            BaseNode* child = node->children[i];
+            float childX = startX + (i + 1) * (adjustedXOffset / (node->children.size() + 1));
+
+            // Draw connecting lines
+            sf::Vertex line[] = {
+                    sf::Vertex(sf::Vector2f(x, y)),
+                    sf::Vertex(sf::Vector2f(childX, childY - radius))
+            };
+            window.draw(line, 2, sf::Lines);
+
+            renderNode(window, child, childX, childY, xOffset * 0.7, font, depth + 1);  // Further decrease horizontal spread
+        }
 
         window.draw(shape);
         window.draw(text);
-
-        float childY = y + 60;
-        float childXOffset = xOffset / 2;
-        for (BaseNode* child : node->children) {
-            float childX = x - xOffset / 2 + (&child - &node->children[0]) * xOffset;
-            sf::Vertex line[] = {
-                    sf::Vertex(sf::Vector2f(x + 20, y + 20)),
-                    sf::Vertex(sf::Vector2f(childX + 20, childY + 20))
-            };
-            window.draw(line, 2, sf::Lines);
-            renderNode(window, child, childX, childY, childXOffset, font);
-        }
     }
 
 public:
     Tree() : root(nullptr) {}
-
-    void render() const {
-        sf::RenderWindow window(sf::VideoMode(800, 600), "Tree Visualization");
-
-        sf::Font font;
-        if (!font.loadFromFile("arial.ttf")) {
-            std::cerr << "Error loading font" << std::endl;
-            return;
-        }
-
-        while (window.isOpen()) {
-            sf::Event event;
-            while (event.type == sf::Event::Closed)
-                window.close();
-
-            window.clear();
-            if (root) {
-                renderNode(window, root, window.getSize().x / 2, 50, window.getSize().x / 4, font);
-            }
-            window.display();
-        }
-    }
-
-    // Overload the << operator
-    friend std::ostream& operator<<(std::ostream& os, const Tree& tree) {
-        tree.render();
-        return os;
-    }
-
 
     void add_root(BaseNode* root_node) {
         root = root_node;
@@ -88,6 +72,36 @@ public:
         } else {
             std::cerr << "Error: Parent or child node is null!" << std::endl;
         }
+    }
+
+    void render() const {
+        sf::RenderWindow window(sf::VideoMode(800, 600), "Tree Visualization");
+
+        sf::Font font;
+        if (!font.loadFromFile("Arial.ttf")) {  // Make sure "arial.ttf" is in the working directory
+            std::cerr << "Error loading font" << std::endl;
+            return;
+        }
+
+        while (window.isOpen()) {
+            sf::Event event;
+            while (window.pollEvent(event)) {
+                if (event.type == sf::Event::Closed)
+                    window.close();
+            }
+
+            window.clear();
+            if (root) {
+                renderNode(window, root, window.getSize().x / 2, 50, window.getSize().x, font, 1);  // Adjust the horizontal spread
+            }
+            window.display();
+        }
+    }
+
+    // Overload the << operator
+    friend std::ostream& operator<<(std::ostream& os, const Tree& tree) {
+        tree.render();
+        return os;
     }
 
     // Pre-order iterator

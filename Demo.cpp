@@ -70,5 +70,7 @@ int main()
         std::cout << node_ptr->get_value() << std::endl;
     }
 
+    std::cout << tree;
+
     return 0;
 }
