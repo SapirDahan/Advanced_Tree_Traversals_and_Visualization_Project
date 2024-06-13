@@ -11,12 +11,12 @@ class Tree {
 private:
     BaseNode* root;
 
-    void renderNode(sf::RenderWindow& window, BaseNode* node, float x, float y, float xOffset, sf::Font& font, int depth) const {
+    void renderNode(sf::RenderWindow& window, BaseNode* node, float x, float y, float xOffset, sf::Font& font, double depth) const {
         if (!node) return;
 
         float radius = 30.0f;  // Circle radius
         sf::CircleShape shape(radius);
-        shape.setFillColor(sf::Color::Blue);  // Change color to blue
+        shape.setFillColor(sf::Color::Black);  // Change color to blue
         shape.setPosition(x - radius, y - radius);
 
         sf::Text text;
@@ -43,11 +43,11 @@ private:
             // Draw connecting lines
             sf::Vertex line[] = {
                     sf::Vertex(sf::Vector2f(x, y)),
-                    sf::Vertex(sf::Vector2f(childX, childY - radius))
+                    sf::Vertex(sf::Vector2f(childX, childY - radius), sf::Color::Black)
             };
             window.draw(line, 2, sf::Lines);
 
-            renderNode(window, child, childX, childY, xOffset * 0.7, font, depth + 1);  // Further decrease horizontal spread
+            renderNode(window, child, childX, childY, xOffset * 0.7, font, depth + 0.5);  // Further decrease horizontal spread
         }
 
         window.draw(shape);
@@ -90,9 +90,9 @@ public:
                     window.close();
             }
 
-            window.clear();
+            window.clear(sf::Color::White);
             if (root) {
-                renderNode(window, root, window.getSize().x / 2, 50, window.getSize().x, font, 1);  // Adjust the horizontal spread
+                renderNode(window, root, window.getSize().x / 2, 50, window.getSize().x, font, 0.001);  // Adjust the horizontal spread
             }
             window.display();
         }
