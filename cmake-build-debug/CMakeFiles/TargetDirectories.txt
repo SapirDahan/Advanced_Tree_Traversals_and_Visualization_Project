@@ -1,3 +1,0 @@
-/home/parallels/CLionProjects/Systems_2_Project4/cmake-build-debug/CMakeFiles/Systems_2_Project4.dir
-/home/parallels/CLionProjects/Systems_2_Project4/cmake-build-debug/CMakeFiles/edit_cache.dir
-/home/parallels/CLionProjects/Systems_2_Project4/cmake-build-debug/CMakeFiles/rebuild_cache.dir

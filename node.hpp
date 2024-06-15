@@ -10,7 +10,10 @@
 
 class BaseNode {
 public:
-    virtual ~BaseNode() = default;
+//    virtual ~BaseNode() {
+//
+//    }
+
     virtual std::string get_value() const = 0;
     std::vector<BaseNode*> children;
 

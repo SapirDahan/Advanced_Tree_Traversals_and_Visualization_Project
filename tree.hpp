@@ -9,6 +9,7 @@
 
 class Tree {
 private:
+
     BaseNode* root;
 
     void renderNode(sf::RenderWindow& window, BaseNode* node, float x, float y, float xOffset, sf::Font& font, double depth) const {
@@ -56,6 +57,10 @@ private:
 
 public:
     Tree() : root(nullptr) {}
+
+//    ~Tree() {
+//        //delete root;
+//    }
 
     void add_root(BaseNode* root_node) {
         root = root_node;
