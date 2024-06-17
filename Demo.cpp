@@ -11,7 +11,7 @@ using namespace std;
 int main()
 {
     Node<string> root_node("root");
-    Tree tree;
+    Tree tree(3);
     tree.add_root(&root_node);
 
     Node<int> n1(1);

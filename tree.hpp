@@ -11,6 +11,7 @@ class Tree {
 private:
 
     BaseNode* root;
+    unsigned int maxDegree = 2;
 
     void renderNode(sf::RenderWindow& window, BaseNode* node, float x, float y, float xOffset, sf::Font& font, double depth) const {
         if (!node) return;
@@ -58,6 +59,9 @@ private:
 public:
     Tree() : root(nullptr) {}
 
+    Tree(unsigned int degree) : root(nullptr), maxDegree(degree) {}
+
+
 //    ~Tree() {
 //        //delete root;
 //    }
@@ -73,7 +77,11 @@ public:
 
     void add_sub_node(BaseNode* parent, BaseNode* child) {
         if (parent && child) {
-            parent->add_child(child);
+            if (parent->children.size() < maxDegree) {
+                parent->add_child(child);
+            } else {
+                std::cerr << "Error: Cannot add child, maxDegree exceeded for parent node!" << std::endl;
+            }
         } else {
             std::cerr << "Error: Parent or child node is null!" << std::endl;
         }
