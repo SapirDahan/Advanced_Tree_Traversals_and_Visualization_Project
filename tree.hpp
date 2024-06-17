@@ -4,12 +4,13 @@
 #include "node.hpp"
 #include <stack>
 #include <queue>
+#include <vector>
+#include <algorithm>
 #include <iostream>
 #include <SFML/Graphics.hpp>
 
 class Tree {
 private:
-
     BaseNode* root;
     unsigned int maxDegree = 2;
 
@@ -18,7 +19,7 @@ private:
 
         float radius = 30.0f;  // Circle radius
         sf::CircleShape shape(radius);
-        shape.setFillColor(sf::Color::Black);  // Change color to blue
+        shape.setFillColor(sf::Color::Black);
         shape.setPosition(x - radius, y - radius);
 
         sf::Text text;
@@ -61,10 +62,9 @@ public:
 
     Tree(unsigned int degree) : root(nullptr), maxDegree(degree) {}
 
+    ~Tree() {
 
-//    ~Tree() {
-//        //delete root;
-//    }
+    }
 
     void add_root(BaseNode* root_node) {
         root = root_node;
@@ -117,165 +117,6 @@ public:
         return os;
     }
 
-    // Pre-order iterator
-    class PreOrderIterator {
-    private:
-        std::stack<BaseNode*> next;
-
-    public:
-        explicit PreOrderIterator(BaseNode* root) {
-            if (root) {
-                next.push(root);
-            }
-        }
-
-        BaseNode* operator*() {
-            return next.top();
-        }
-
-        PreOrderIterator& operator++() {
-            BaseNode* currentNode = next.top();
-            next.pop();
-
-            auto& children = currentNode->children;
-            for (auto it = children.rbegin(); it != children.rend(); ++it) {
-                if (*it != nullptr) {
-                    next.push(*it);
-                } else {
-                    std::cerr << "Error: Encountered null or invalid child node!" << std::endl;
-                }
-            }
-            return *this;
-        }
-
-        bool operator!=(const PreOrderIterator& other) const {
-            return !next.empty();
-        }
-    };
-
-    PreOrderIterator begin_pre_order() {
-        return PreOrderIterator(root);
-    }
-
-    PreOrderIterator end_pre_order() {
-        return PreOrderIterator(nullptr);
-    }
-
-    // Post-order iterator
-    class PostOrderIterator {
-    private:
-        struct NodeInfo {
-            BaseNode* node;
-            bool isExpanded;
-            bool operator==(const NodeInfo& rhs) const {
-                return node == rhs.node && isExpanded == rhs.isExpanded;
-            }
-        };
-
-        std::stack<NodeInfo> next;
-
-        void expandTop() {
-            while (!next.top().isExpanded) {
-                next.top().isExpanded = true;
-                auto& children = next.top().node->children;
-                for (auto it = children.rbegin(); it != children.rend(); ++it) {
-                    if (*it != nullptr) {
-                        next.push({*it, false});
-                    } else {
-                        std::cerr << "Error: Encountered null or invalid child node!" << std::endl;
-                    }
-                }
-            }
-        }
-
-    public:
-        explicit PostOrderIterator(BaseNode* root) {
-            if (root) {
-                next.push({root, false});
-                expandTop();
-            }
-        }
-
-        BaseNode* operator*() {
-            return next.top().node;
-        }
-
-        PostOrderIterator& operator++() {
-            next.pop();
-            if (!next.empty()) expandTop();
-            return *this;
-        }
-
-        bool operator!=(const PostOrderIterator& other) const {
-            return !next.empty();
-        }
-    };
-
-    PostOrderIterator begin_post_order() {
-        return PostOrderIterator(root);
-    }
-
-    PostOrderIterator end_post_order() {
-        return PostOrderIterator(nullptr);
-    }
-
-    // In-order iterator
-    class InOrderIterator {
-    private:
-        std::stack<BaseNode*> next;
-        std::stack<bool> visited;
-
-        void pushLeft(BaseNode* node) {
-            while (node) {
-                next.push(node);
-                visited.push(false);
-                if (!node->children.empty()) {
-                    node = node->children[0];
-                } else {
-                    break;
-                }
-            }
-        }
-
-    public:
-        explicit InOrderIterator(BaseNode* root) {
-            if (root) {
-                pushLeft(root);
-            }
-        }
-
-        BaseNode* operator*() {
-            return next.top();
-        }
-
-        InOrderIterator& operator++() {
-            BaseNode* currentNode = next.top();
-            next.pop();
-            visited.pop();
-
-            if (!currentNode->children.empty()) {
-                std::vector<BaseNode*>& children = currentNode->children;
-                for (size_t i = 1; i < children.size(); ++i) {
-                    pushLeft(children[i]);
-                }
-            }
-
-            return *this;
-        }
-
-        bool operator!=(const InOrderIterator& other) const {
-            return !next.empty();
-        }
-    };
-
-    InOrderIterator begin_in_order() {
-        return InOrderIterator(root);
-    }
-
-    InOrderIterator end_in_order() {
-        return InOrderIterator(nullptr);
-    }
-
     // BFS iterator
     class BFSIterator {
     private:
@@ -311,23 +152,23 @@ public:
         }
     };
 
-    BFSIterator begin_bfs() {
+    BFSIterator begin_bfs() const {
         return BFSIterator(root);
     }
 
-    BFSIterator end_bfs() {
+    BFSIterator end_bfs() const {
         return BFSIterator(nullptr);
     }
 
-    BFSIterator begin() {
+    BFSIterator begin() const {
         return begin_bfs();
     }
 
-    BFSIterator end() {
+    BFSIterator end() const {
         return end_bfs();
     }
 
-    // DFS iterator (similar to pre-order)
+    // DFS iterator
     class DFSIterator {
     private:
         std::stack<BaseNode*> next;
@@ -363,12 +204,237 @@ public:
         }
     };
 
-    DFSIterator begin_dfs() {
+    DFSIterator begin_dfs() const {
         return DFSIterator(root);
     }
 
-    DFSIterator end_dfs() {
+    DFSIterator end_dfs() const {
         return DFSIterator(nullptr);
+    }
+
+    // Pre-order iterator
+    class PreOrderIterator {
+    private:
+        std::stack<BaseNode*> next;
+        bool useDFS;
+
+    public:
+        explicit PreOrderIterator(BaseNode* root, bool useDFS) : useDFS(useDFS) {
+            if (root) {
+                next.push(root);
+            }
+        }
+
+        BaseNode* operator*() {
+            return next.top();
+        }
+
+        PreOrderIterator& operator++() {
+            BaseNode* currentNode = next.top();
+            next.pop();
+
+            auto& children = currentNode->children;
+            for (auto it = children.rbegin(); it != children.rend(); ++it) {
+                if (*it != nullptr) {
+                    next.push(*it);
+                } else {
+                    std::cerr << "Error: Encountered null or invalid child node!" << std::endl;
+                }
+            }
+            return *this;
+        }
+
+        bool operator!=(const PreOrderIterator& other) const {
+            return !next.empty();
+        }
+    };
+
+    PreOrderIterator begin_pre_order() const {
+        return PreOrderIterator(root, maxDegree > 2);
+    }
+
+    PreOrderIterator end_pre_order() const {
+        return PreOrderIterator(nullptr, maxDegree > 2);
+    }
+
+    // Post-order iterator
+    class PostOrderIterator {
+    private:
+        std::stack<BaseNode*> next;
+        bool useDFS;
+
+        void expandTop() {
+            while (!next.empty() && !next.top()->children.empty()) {
+                BaseNode* node = next.top();
+                next.pop();
+                auto& children = node->children;
+                for (auto it = children.rbegin(); it != children.rend(); ++it) {
+                    if (*it != nullptr) {
+                        next.push(*it);
+                    } else {
+                        std::cerr << "Error: Encountered null or invalid child node!" << std::endl;
+                    }
+                }
+                next.push(node);
+            }
+        }
+
+    public:
+        explicit PostOrderIterator(BaseNode* root, bool useDFS) : useDFS(useDFS) {
+            if (root) {
+                next.push(root);
+                if (!useDFS) {
+                    expandTop();
+                }
+            }
+        }
+
+        BaseNode* operator*() {
+            return next.top();
+        }
+
+        PostOrderIterator& operator++() {
+            BaseNode* node = next.top();
+            next.pop();
+            if (useDFS) {
+                auto& children = node->children;
+                for (auto it = children.rbegin(); it != children.rend(); ++it) {
+                    if (*it != nullptr) {
+                        next.push(*it);
+                    } else {
+                        std::cerr << "Error: Encountered null or invalid child node!" << std::endl;
+                    }
+                }
+            } else {
+                expandTop();
+            }
+            return *this;
+        }
+
+        bool operator!=(const PostOrderIterator& other) const {
+            return !next.empty();
+        }
+    };
+
+    PostOrderIterator begin_post_order() const {
+        return PostOrderIterator(root, maxDegree > 2);
+    }
+
+    PostOrderIterator end_post_order() const {
+        return PostOrderIterator(nullptr, maxDegree > 2);
+    }
+
+    // In-order iterator
+    class InOrderIterator {
+    private:
+        std::stack<BaseNode*> next;
+        std::stack<bool> visited;
+        bool useDFS;
+
+        void pushLeft(BaseNode* node) {
+            while (node) {
+                next.push(node);
+                visited.push(false);
+                if (!node->children.empty()) {
+                    node = node->children[0];
+                } else {
+                    break;
+                }
+            }
+        }
+
+    public:
+        explicit InOrderIterator(BaseNode* root, bool useDFS) : useDFS(useDFS) {
+            if (root) {
+                pushLeft(root);
+            }
+        }
+
+        BaseNode* operator*() {
+            return next.top();
+        }
+
+        InOrderIterator& operator++() {
+            BaseNode* currentNode = next.top();
+            next.pop();
+            visited.pop();
+
+            if (useDFS) {
+                auto& children = currentNode->children;
+                for (auto it = children.rbegin(); it != children.rend(); ++it) {
+                    if (*it != nullptr) {
+                        next.push(*it);
+                    } else {
+                        std::cerr << "Error: Encountered null or invalid child node!" << std::endl;
+                    }
+                }
+            } else {
+                if (!currentNode->children.empty()) {
+                    std::vector<BaseNode*>& children = currentNode->children;
+                    for (size_t i = 1; i < children.size(); ++i) {
+                        pushLeft(children[i]);
+                    }
+                }
+            }
+            return *this;
+        }
+
+        bool operator!=(const InOrderIterator& other) const {
+            return !next.empty();
+        }
+    };
+
+    InOrderIterator begin_in_order() const {
+        return InOrderIterator(root, maxDegree > 2);
+    }
+
+    InOrderIterator end_in_order() const {
+        return InOrderIterator(nullptr, maxDegree > 2);
+    }
+
+    // Heap iterator
+    class HeapIterator {
+    private:
+        std::vector<BaseNode*> heap;
+        size_t index;
+
+        void heapify() {
+            auto comparator = [](BaseNode* a, BaseNode* b) {
+                return a->get_ascii_value() < b->get_ascii_value();
+            };
+            std::make_heap(heap.begin(), heap.end(), comparator);
+            std::sort_heap(heap.begin(), heap.end(), comparator);
+        }
+
+    public:
+        explicit HeapIterator(const std::vector<BaseNode*>& nodes) : heap(nodes), index(0) {
+            heapify();
+        }
+
+        BaseNode* operator*() {
+            return heap[index];
+        }
+
+        HeapIterator& operator++() {
+            ++index;
+            return *this;
+        }
+
+        bool operator!=(const HeapIterator& other) const {
+            return index != other.index;
+        }
+    };
+
+    HeapIterator begin_heap() const {
+        std::vector<BaseNode*> nodes;
+        for (auto it = begin_in_order(); it != end_in_order(); ++it) {
+            nodes.push_back(*it);
+        }
+        return HeapIterator(nodes);
+    }
+
+    HeapIterator end_heap() const {
+        return HeapIterator({});
     }
 };
 

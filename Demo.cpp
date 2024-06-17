@@ -34,41 +34,43 @@ int main()
     std::cout << "Pre-order traversal:" << std::endl;
     for (auto it = tree.begin_pre_order(); it != tree.end_pre_order(); ++it) {
         BaseNode* node_ptr = *it;
-        std::cout << "Visiting node with value: " << node_ptr->get_value() << std::endl;
+        std::cout << node_ptr->get_value() << " ";
     }
 
     // Post-order traversal
-    std::cout << "Post-order traversal:" << std::endl;
+    std::cout << "\n\nPost-order traversal:" << std::endl;
     for (auto it = tree.begin_post_order(); it != tree.end_post_order(); ++it) {
         BaseNode* node_ptr = *it;
-        std::cout << "Visiting node with value: " << node_ptr->get_value() << std::endl;
+        std::cout << node_ptr->get_value() << " ";
     }
 
     // In-order traversal
-    std::cout << "In-order traversal:" << std::endl;
+    std::cout << "\n\nIn-order traversal:" << std::endl;
     for (auto it = tree.begin_in_order(); it != tree.end_in_order(); ++it) {
         BaseNode* node_ptr = *it;
-        std::cout << "Visiting node with value: " << node_ptr->get_value() << std::endl;
+        std::cout << node_ptr->get_value() << " ";
     }
 
     // BFS traversal
-    std::cout << "BFS traversal:" << std::endl;
+    std::cout << "\n\nBFS traversal:" << std::endl;
     for (auto it = tree.begin_bfs(); it != tree.end_bfs(); ++it) {
         BaseNode* node_ptr = *it;
-        std::cout << "Visiting node with value: " << node_ptr->get_value() << std::endl;
+        std::cout << node_ptr->get_value() << " ";
     }
 
     // DFS traversal
-    std::cout << "DFS traversal:" << std::endl;
+    std::cout << "\n\nDFS traversal:" << std::endl;
     for (auto it = tree.begin_dfs(); it != tree.end_dfs(); ++it) {
         BaseNode* node_ptr = *it;
-        std::cout << "Visiting node with value: " << node_ptr->get_value() << std::endl;
+        std::cout << node_ptr->get_value() << " ";
     }
 
-    std::cout << "Range-based for loop (BFS traversal):" << std::endl;
+    std::cout << "\n\nRange-based for loop (BFS traversal):" << std::endl;
     for (auto node_ptr : tree) {
-        std::cout << node_ptr->get_value() << std::endl;
+        std::cout << node_ptr->get_value() << " ";
     }
+
+    std::cout<<"\n\n" << std::endl;
 
     std::cout << tree;
 

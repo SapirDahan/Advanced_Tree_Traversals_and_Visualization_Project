@@ -15,12 +15,13 @@ public:
 //    }
 
     virtual std::string get_value() const = 0;
+    virtual unsigned int get_ascii_value() const = 0;
+
     std::vector<BaseNode*> children;
 
     void add_child(BaseNode* child) {
         if (child) {
             children.push_back(child);
-            std::cout << "Added child node with value: " << child->get_value() << std::endl;
         } else {
             std::cerr << "Error: Tried to add a null child!" << std::endl;
         }
@@ -33,7 +34,6 @@ public:
     T value;
 
     Node(T val) : value(val) {
-        std::cout << "Node created with value: " << get_value() << std::endl;
     }
 
     std::string get_value() const override {
@@ -48,9 +48,22 @@ public:
             str.erase(str.find_last_not_of('0') + 1, std::string::npos);
             str.erase(str.find_last_not_of('.') + 1, std::string::npos);
             return str;
-        } else {
+        }
+//        else if constexpr (std::is_same_v<T, _Complex>) {
+//            return value.to_string();
+//        }
+        else {
             return "Unsupported type";
         }
+    }
+
+    unsigned int get_ascii_value() const override {
+        std::string str_value = get_value();
+        unsigned int ascii_sum = 0;
+        for (char c : str_value) {
+            ascii_sum += static_cast<unsigned int>(c);
+        }
+        return ascii_sum;
     }
 };
 
