@@ -5,11 +5,15 @@
 #include <string>
 #include "node.hpp"
 #include "tree.hpp"
+#include "Complex.hpp"
 
 using namespace std;
 
 int main()
 {
+    // Redirect stderr to /dev/null
+    freopen("/dev/null", "w", stderr);
+
     Node<string> root_node("root");
     Tree tree(3);
     tree.add_root(&root_node);
@@ -21,6 +25,7 @@ int main()
     Node<string> n5("n5");
     Node<string> n6("n6");
     Node<string> n7("n7");
+    Node<Complex<int, double>> n8(Complex(7, -4.5));
 
     tree.add_sub_node(&root_node, &n1);
     tree.add_sub_node(&root_node, &n2);
@@ -29,6 +34,7 @@ int main()
     tree.add_sub_node(&n1, &n5);
     tree.add_sub_node(&n2, &n6);
     tree.add_sub_node(&n2, &n7);
+    tree.add_sub_node(&n5, &n8);
 
     // Pre-order traversal
     std::cout << "Pre-order traversal:" << std::endl;
@@ -70,7 +76,7 @@ int main()
         std::cout << node_ptr->get_value() << " ";
     }
 
-    std::cout<<"\n\n" << std::endl;
+    std::cout<<"\n" << std::endl;
 
     std::cout << tree;
 

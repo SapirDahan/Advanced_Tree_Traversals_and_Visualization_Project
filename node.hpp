@@ -7,23 +7,22 @@
 #include <type_traits>
 #include <sstream>
 #include <iomanip>
+#include <stdexcept>  // For std::runtime_error
+#include "Complex.hpp"
 
 class BaseNode {
 public:
-//    virtual ~BaseNode() {
-//
-//    }
+    virtual ~BaseNode() = default;
 
     virtual std::string get_value() const = 0;
     virtual unsigned int get_ascii_value() const = 0;
-
     std::vector<BaseNode*> children;
 
     void add_child(BaseNode* child) {
         if (child) {
             children.push_back(child);
         } else {
-            std::cerr << "Error: Tried to add a null child!" << std::endl;
+            throw std::runtime_error("Error: Tried to add a null child!");
         }
     }
 };
@@ -33,8 +32,7 @@ class Node : public BaseNode {
 public:
     T value;
 
-    Node(T val) : value(val) {
-    }
+    Node(T val) : value(val) {}
 
     std::string get_value() const override {
         if constexpr (std::is_same_v<T, std::string>) {
@@ -48,12 +46,10 @@ public:
             str.erase(str.find_last_not_of('0') + 1, std::string::npos);
             str.erase(str.find_last_not_of('.') + 1, std::string::npos);
             return str;
-        }
-//        else if constexpr (std::is_same_v<T, _Complex>) {
-//            return value.to_string();
-//        }
-        else {
-            return "Unsupported type";
+        } else if constexpr (std::is_same_v<T, Complex<typename T::real_type, typename T::imag_type>>) {
+            return value.to_string();
+        } else {
+            throw std::runtime_error("Unsupported type");
         }
     }
 

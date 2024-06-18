@@ -1,28 +1,33 @@
-// complex.hpp
 #ifndef COMPLEX_HPP
 #define COMPLEX_HPP
 
 #include <iostream>
-#include <cmath>
+#include <sstream>
 
+template <typename RealType, typename ImagType>
 class Complex {
+public:
+    using real_type = RealType;
+    using imag_type = ImagType;
+
 private:
-    double real;
-    double imag;
+    RealType real;
+    ImagType imag;
 
 public:
     // Constructors
-    Complex() : real(0), imag(0) {}
-    Complex(double r, double i) : real(r), imag(i) {}
+    Complex();
+    Complex(RealType r, ImagType i);
 
+    // Convert to string
+    std::string to_string() const;
+
+    // Calculate ASCII sum of the string representation
+    unsigned int get_ascii_value() const;
 
     // Stream insertion
-    friend std::ostream& operator<<(std::ostream& os, const Complex& c) {
-        os << c.real;
-        if (c.imag >= 0) os << "+";
-        os << c.imag << "i";
-        return os;
-    }
+    template <typename R, typename I>
+    friend std::ostream& operator<<(std::ostream& os, const Complex<R, I>& c);
 };
 
 #endif // COMPLEX_HPP
