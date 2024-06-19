@@ -7,7 +7,7 @@
 #include <type_traits>
 #include <sstream>
 #include <iomanip>
-#include <stdexcept>  // For std::runtime_error
+#include <stdexcept>
 #include "Complex.hpp"
 
 class BaseNode {

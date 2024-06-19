@@ -25,9 +25,6 @@ public:
     // Calculate ASCII sum of the string representation
     unsigned int get_ascii_value() const;
 
-    // Stream insertion
-    template <typename R, typename I>
-    friend std::ostream& operator<<(std::ostream& os, const Complex<R, I>& c);
 };
 
 #endif // COMPLEX_HPP

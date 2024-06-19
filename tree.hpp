@@ -7,11 +7,14 @@
 #include <vector>
 #include <algorithm>
 #include <iostream>
+#include <SFML/Graphics.hpp>
 
 class Tree {
 private:
     BaseNode* root;
     unsigned int maxDegree = 2;
+
+    void renderNode(sf::RenderWindow& window, BaseNode* node, float x, float y, float xOffset, sf::Font& font, double depth) const;
 
 public:
     Tree();
@@ -21,11 +24,13 @@ public:
     void add_root(BaseNode* root_node);
     BaseNode* get_root() const;
     void add_sub_node(BaseNode* parent, BaseNode* child);
+    void render() const;
 
     // BFS iterator
     class BFSIterator {
     private:
         std::queue<BaseNode*> queue;
+
     public:
         explicit BFSIterator(BaseNode* root);
         BaseNode* operator*();
@@ -42,6 +47,7 @@ public:
     class DFSIterator {
     private:
         std::stack<BaseNode*> next;
+
     public:
         explicit DFSIterator(BaseNode* root);
         BaseNode* operator*();
@@ -57,6 +63,7 @@ public:
     private:
         std::stack<BaseNode*> next;
         bool useDFS;
+
     public:
         explicit PreOrderIterator(BaseNode* root, bool useDFS);
         BaseNode* operator*();
@@ -70,9 +77,11 @@ public:
     // Post-order iterator
     class PostOrderIterator {
     private:
+        std::stack<std::pair<BaseNode*, bool>> stack;
         std::stack<BaseNode*> next;
         bool useDFS;
         void expandTop();
+
     public:
         explicit PostOrderIterator(BaseNode* root, bool useDFS);
         BaseNode* operator*();
@@ -90,6 +99,7 @@ public:
         std::stack<bool> visited;
         bool useDFS;
         void pushLeft(BaseNode* node);
+
     public:
         explicit InOrderIterator(BaseNode* root, bool useDFS);
         BaseNode* operator*();
@@ -105,7 +115,9 @@ public:
     private:
         std::vector<BaseNode*> heap;
         size_t index;
+
         void heapify();
+
     public:
         explicit HeapIterator(const std::vector<BaseNode*>& nodes);
         BaseNode* operator*();
@@ -115,9 +127,9 @@ public:
 
     HeapIterator begin_heap() const;
     HeapIterator end_heap() const;
-
-    // Friend function for stream insertion
-    friend std::ostream& operator<<(std::ostream& os, const Tree& tree);
 };
+
+// Stream insertion
+std::ostream& operator<<(std::ostream& os, const Tree& tree);
 
 #endif // TREE_HPP

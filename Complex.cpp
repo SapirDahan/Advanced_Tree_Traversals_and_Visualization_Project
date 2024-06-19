@@ -28,13 +28,6 @@ unsigned int Complex<RealType, ImagType>::get_ascii_value() const {
     return ascii_sum;
 }
 
-// Stream insertion
-template <typename RealType, typename ImagType>
-std::ostream& operator<<(std::ostream& os, const Complex<RealType, ImagType>& c) {
-    os << c.to_string();
-    return os;
-}
-
 // Explicit template instantiation for common types
 template class Complex<int, int>;
 template class Complex<int, double>;

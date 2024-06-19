@@ -1,6 +1,7 @@
 #include "tree.hpp"
 #include "gui.hpp"
 #include <stdexcept>
+#include <stack>
 
 // Constructor implementations
 Tree::Tree() : root(nullptr) {}
@@ -157,26 +158,26 @@ Tree::PreOrderIterator Tree::end_pre_order() const {
 // PostOrderIterator implementations
 Tree::PostOrderIterator::PostOrderIterator(BaseNode* root, bool useDFS) : useDFS(useDFS) {
     if (root) {
-        next.push(root);
-        if (!useDFS) {
-            expandTop();
-        }
+        stack.push({root, false});
+        expandTop();
     }
 }
 
 void Tree::PostOrderIterator::expandTop() {
-    while (!next.empty() && !next.top()->children.empty()) {
-        BaseNode* node = next.top();
-        next.pop();
-        auto& children = node->children;
-        for (auto it = children.rbegin(); it != children.rend(); ++it) {
+    while (!stack.empty() && !stack.top().second) {
+        auto [node, visited] = stack.top();
+        stack.pop();
+        stack.push({node, true});
+        for (auto it = node->children.rbegin(); it != node->children.rend(); ++it) {
             if (*it != nullptr) {
-                next.push(*it);
+                stack.push({*it, false});
             } else {
                 throw std::runtime_error("Error: Encountered null or invalid child node!");
             }
         }
-        next.push(node);
+    }
+    if (!stack.empty()) {
+        next.push(stack.top().first);
     }
 }
 
@@ -185,18 +186,9 @@ BaseNode* Tree::PostOrderIterator::operator*() {
 }
 
 Tree::PostOrderIterator& Tree::PostOrderIterator::operator++() {
-    BaseNode* node = next.top();
     next.pop();
-    if (useDFS) {
-        auto& children = node->children;
-        for (auto it = children.rbegin(); it != children.rend(); ++it) {
-            if (*it != nullptr) {
-                next.push(*it);
-            } else {
-                throw std::runtime_error("Error: Encountered null or invalid child node!");
-            }
-        }
-    } else {
+    if (!stack.empty()) {
+        stack.pop();
         expandTop();
     }
     return *this;
@@ -217,7 +209,11 @@ Tree::PostOrderIterator Tree::end_post_order() const {
 // InOrderIterator implementations
 Tree::InOrderIterator::InOrderIterator(BaseNode* root, bool useDFS) : useDFS(useDFS) {
     if (root) {
-        pushLeft(root);
+        if (useDFS) {
+            next.push(root);
+        } else {
+            pushLeft(root);
+        }
     }
 }
 
