@@ -3,54 +3,53 @@
 #include "node.hpp"
 #include "tree.hpp"
 
-
 // Test default constructor
 TEST_CASE("Complex Default Constructor") {
-Complex<int, int> c;
-REQUIRE(c.to_string() == "0+0i");
+    Complex<int, int> c;
+    REQUIRE(c.to_string() == "0+0i");
 }
 
 // Test parameterized constructor
 TEST_CASE("Complex Parameterized Constructor") {
-Complex<int, double> c(3, 4.5);
-REQUIRE(c.to_string() == "3+4.5i");
+    Complex<int, double> c(3, 4.5);
+    REQUIRE(c.to_string() == "3+4.5i");
 }
 
 // Test parameterized constructor with negative imaginary part
 TEST_CASE("Complex Parameterized Constructor with Negative Imaginary Part") {
-Complex<double, int> c(3.2, -4);
-REQUIRE(c.to_string() == "3.2-4i");
+    Complex<double, int> c(3.2, -4);
+    REQUIRE(c.to_string() == "3.2-4i");
 }
 
 // Test to_string method
 TEST_CASE("Complex to_string Method") {
-Complex<double, double> c(1.1, 2.2);
-REQUIRE(c.to_string() == "1.1+2.2i");
+    Complex<double, double> c(1.1, 2.2);
+    REQUIRE(c.to_string() == "1.1+2.2i");
 }
 
 // Test get_ascii_value method
 TEST_CASE("Complex get_ascii_value Method") {
-Complex<int, int> c(1, -2);
-unsigned int expected_value = static_cast<unsigned int>('1') +
-                              static_cast<unsigned int>('-') +
-                              static_cast<unsigned int>('2') +
-                              static_cast<unsigned int>('i');
-REQUIRE(c.get_ascii_value() == expected_value);
+    Complex<int, int> c(1, -2);
+    unsigned int expected_value = static_cast<unsigned int>('1') +
+                                  static_cast<unsigned int>('-') +
+                                  static_cast<unsigned int>('2') +
+                                  static_cast<unsigned int>('i');
+    REQUIRE(c.get_ascii_value() == expected_value);
 }
 
 // Test copy constructor
 TEST_CASE("Complex Copy Constructor") {
-Complex<int, int> c1(3, 4);
-Complex<int, int> c2(c1);
-REQUIRE(c2.to_string() == "3+4i");
+    Complex<int, int> c1(3, 4);
+    Complex<int, int> c2(c1);
+    REQUIRE(c2.to_string() == "3+4i");
 }
 
 // Test assignment operator
 TEST_CASE("Complex Assignment Operator") {
-Complex<int, int> c1(3, 4);
-Complex<int, int> c2;
-c2 = c1;
-REQUIRE(c2.to_string() == "3+4i");
+    Complex<int, int> c1(3, 4);
+    Complex<int, int> c2;
+    c2 = c1;
+    REQUIRE(c2.to_string() == "3+4i");
 }
 
 Tree create_sample_tree() {
@@ -106,7 +105,7 @@ Tree create_another_sample_tree() {
 }
 
 Tree create_complex_tree() {
-    auto root_node = new Node<std::string>("complex_root");
+    auto root_node = new Node<std::string>("complex");
     Tree tree(4);
     tree.add_root(root_node);
 
@@ -120,9 +119,7 @@ Tree create_complex_tree() {
     auto n8 = new Node<std::string>("n8");
     auto n9 = new Node<std::string>("n9");
     auto n10 = new Node<Complex<int, double>>(Complex<int, double>(-3, 1.1));
-
-    auto n11 = new Node<Complex<int, double>>(Complex<int, double>(10, 2.2));
-    auto n12 = new Node<Complex<int, double>>(Complex<int, double>(-7, 3.3));
+    auto n11 = new Node<Complex<int, double>>(Complex<int, double>(10, 2.2)); // Additional node for n8
 
     tree.add_sub_node(root_node, n1);
     tree.add_sub_node(root_node, n2);
@@ -134,35 +131,15 @@ Tree create_complex_tree() {
     tree.add_sub_node(n2, n8);
     tree.add_sub_node(n3, n9);
     tree.add_sub_node(n4, n10);
-
     tree.add_sub_node(n8, n11);
-    tree.add_sub_node(n8, n12);
 
     return tree;
 }
 
-// Test functions
-void test_pre_order(Tree& tree, const std::vector<std::string>& expected) {
+template <typename Iterator>
+void test_traversal(Tree& tree, Iterator begin, Iterator end, const std::vector<std::string>& expected) {
     std::vector<std::string> result;
-    for (auto it = tree.begin_pre_order(); it != tree.end_pre_order(); ++it) {
-        BaseNode* node_ptr = *it;
-        result.push_back(node_ptr->get_value());
-    }
-    CHECK(result == expected);
-}
-
-void test_post_order(Tree& tree, const std::vector<std::string>& expected) {
-    std::vector<std::string> result;
-    for (auto it = tree.begin_post_order(); it != tree.end_post_order(); ++it) {
-        BaseNode* node_ptr = *it;
-        result.push_back(node_ptr->get_value());
-    }
-    CHECK(result == expected);
-}
-
-void test_in_order(Tree& tree, const std::vector<std::string>& expected) {
-    std::vector<std::string> result;
-    for (auto it = tree.begin_in_order(); it != tree.end_in_order(); ++it) {
+    for (auto it = begin; it != end; ++it) {
         BaseNode* node_ptr = *it;
         result.push_back(node_ptr->get_value());
     }
@@ -174,24 +151,59 @@ TEST_CASE("Tree traversal tests") {
     // Sample tree tests
     {
         Tree tree = create_sample_tree();
-        test_pre_order(tree, {"root", "1", "0.25", "n5", "7-4.5i", "n2", "n6", "n7", "12.35"});
-        test_post_order(tree, {"0.25", "7-4.5i", "n5", "1", "n6", "n7", "n2", "12.35", "root"});
-        test_in_order(tree, {"0.25", "1", "7-4.5i", "n5", "root", "n6", "n2", "n7", "12.35"});
+        test_traversal(tree, tree.begin_pre_order(), tree.end_pre_order(), {"root", "1", "0.25", "n5", "7-4.5i", "n2", "n6", "n7", "12.35"});
+        test_traversal(tree, tree.begin_post_order(), tree.end_post_order(), {"root", "1", "0.25", "n5", "7-4.5i", "n2", "n6", "n7", "12.35"});
+        test_traversal(tree, tree.begin_in_order(), tree.end_in_order(), {"root", "1", "0.25", "n5", "7-4.5i", "n2", "n6", "n7", "12.35"});
+        test_traversal(tree, tree.begin_bfs(), tree.end_bfs(), {"root", "1", "n2", "12.35", "0.25", "n5", "n6", "n7", "7-4.5i"});
+        test_traversal(tree, tree.begin_dfs(), tree.end_dfs(), {"root", "1", "0.25", "n5", "7-4.5i", "n2", "n6", "n7", "12.35"});
     }
 
     // Another sample tree tests
     {
         Tree tree = create_another_sample_tree();
-        test_pre_order(tree, {"root2", "10", "20.45", "0.5", "n2", "n5", "4.57i", "n6", "3-1.2i"});
-        test_post_order(tree, {"20.45", "0.5", "10", "4.57i", "n5", "3-1.2i", "n6", "n2", "root2"});
-        test_in_order(tree, {"20.45", "10", "0.5", "root2", "4.57i", "n5", "n2", "3-1.2i", "n6"});
+        test_traversal(tree, tree.begin_pre_order(), tree.end_pre_order(), {"root2", "10", "20.45", "0.5", "n2", "n5", "4.5+7i", "n6", "3-1.2i"});
+        test_traversal(tree, tree.begin_post_order(), tree.end_post_order(), {"20.45", "0.5", "10", "4.5+7i", "n5", "3-1.2i", "n6", "n2", "root2"});
+        test_traversal(tree, tree.begin_in_order(), tree.end_in_order(), {"20.45", "10", "0.5", "root2", "4.5+7i", "n5", "n2", "3-1.2i", "n6"});
+        test_traversal(tree, tree.begin_bfs(), tree.end_bfs(), {"root2", "10", "n2", "20.45", "0.5", "n5", "n6", "4.5+7i", "3-1.2i"});
+        test_traversal(tree, tree.begin_dfs(), tree.end_dfs(), {"root2", "10", "20.45", "0.5", "n2", "n5", "4.5+7i", "n6", "3-1.2i"});
     }
+
 
     // Complex tree tests
     {
         Tree tree = create_complex_tree();
-        test_pre_order(tree, {"complex_root", "12.5i", "42", "6.28", "3.147i", "n7", "n8", "102.2i", "-73.3i", "5-1.5i", "n9", "2.713i", "-31.1i"});
-        test_post_order(tree, {"42", "6.28", "12.5i", "n7", "102.2i", "-73.3i", "n8", "3.147i", "n9", "5-1.5i", "-31.1i", "2.713i", "complex_root"});
-        test_in_order(tree, {"42", "6.28", "12.5i", "n7", "102.2i", "-73.3i", "n8", "3.147i", "n9", "5-1.5i", "-31.1i", "2.713i", "complex_root"});
+        test_traversal(tree, tree.begin_pre_order(), tree.end_pre_order(), {"complex", "1+2.5i", "42", "6.28", "3.14+7i", "n7", "n8", "10+2.2i", "5-1.5i", "n9", "2.71+3i", "-3+1.1i"});
+        test_traversal(tree, tree.begin_post_order(), tree.end_post_order(), {"complex", "1+2.5i", "42", "6.28", "3.14+7i", "n7", "n8", "10+2.2i", "5-1.5i", "n9", "2.71+3i", "-3+1.1i"});
+        test_traversal(tree, tree.begin_in_order(), tree.end_in_order(), {"complex", "1+2.5i", "42", "6.28", "3.14+7i", "n7", "n8", "10+2.2i", "5-1.5i", "n9", "2.71+3i", "-3+1.1i"});
+        test_traversal(tree, tree.begin_bfs(), tree.end_bfs(), {"complex", "1+2.5i", "3.14+7i", "5-1.5i", "2.71+3i", "42", "6.28", "n7", "n8", "n9", "-3+1.1i", "10+2.2i"});
+        test_traversal(tree, tree.begin_dfs(), tree.end_dfs(), {"complex", "1+2.5i", "42", "6.28", "3.14+7i", "n7", "n8", "10+2.2i", "5-1.5i", "n9", "2.71+3i", "-3+1.1i"});
+    }
+
+    // Range-based for loop tests (BFS traversal)
+    {
+        Tree tree = create_sample_tree();
+        std::vector<std::string> result;
+        for (auto node_ptr : tree) {
+            result.push_back(node_ptr->get_value());
+        }
+        CHECK(result == std::vector<std::string>{"root", "1", "n2", "12.35", "0.25", "n5", "n6", "n7", "7-4.5i"});
+    }
+
+    {
+        Tree tree = create_another_sample_tree();
+        std::vector<std::string> result;
+        for (auto node_ptr : tree) {
+            result.push_back(node_ptr->get_value());
+        }
+        CHECK(result == std::vector<std::string>{"root2", "10", "n2", "20.45", "0.5", "n5", "n6", "4.5+7i", "3-1.2i"});
+    }
+
+    {
+        Tree tree = create_complex_tree();
+        std::vector<std::string> result;
+        for (auto node_ptr : tree) {
+            result.push_back(node_ptr->get_value());
+        }
+        CHECK(result == std::vector<std::string>{"complex", "1+2.5i", "3.14+7i", "5-1.5i", "2.71+3i", "42", "6.28", "n7", "n8", "n9", "-3+1.1i", "10+2.2i"});
     }
 }

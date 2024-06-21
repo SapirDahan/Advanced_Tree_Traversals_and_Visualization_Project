@@ -146,6 +146,33 @@ Tree create_complex_tree() {
     return tree;
 }
 
+// Function to create and return a tree with only strings
+Tree create_string_tree() {
+    auto root_node = new Node<string>("node5");
+    Tree tree(2);
+    tree.add_root(root_node);
+
+    auto n1 = new Node<string>("node3");
+    auto n2 = new Node<string>("node8");
+    auto n3 = new Node<string>("node1");
+    auto n4 = new Node<string>("node4");
+    auto n5 = new Node<string>("node7");
+    auto n6 = new Node<string>("node6");
+    auto n7 = new Node<string>("node2");
+
+    tree.add_sub_node(root_node, n1);
+    tree.add_sub_node(root_node, n2);
+    tree.add_sub_node(n1, n3);
+    tree.add_sub_node(n1, n4);
+    tree.add_sub_node(n2, n5);
+    tree.add_sub_node(n5, n6);
+    tree.add_sub_node(n3, n7);
+
+    return tree;
+}
+
+
+
 
 int main() {
     // Redirect stderr to /dev/null
@@ -162,6 +189,21 @@ int main() {
     std::cout << "\n\nDemo 3:" << std::endl;
     Tree tree3 = create_complex_tree();
     demonstrate_tree(tree3);
+
+
+    std::cout << "\n\nDemo 4 (String Tree - Min-Heap):" << std::endl;
+    Tree stringTree = create_string_tree();
+
+    std::cout << "\n\nThe tree before:" << std::endl;
+    demonstrate_tree(stringTree);
+
+    std::cout << "\n\nThe min heap:" << std::endl;
+    try {
+        Tree heapTree = stringTree.myHeap();
+        demonstrate_tree(heapTree);
+    } catch (const std::exception& e) {
+        std::cerr << "Exception: " << e.what() << std::endl;
+    }
 
     return 0;
 }

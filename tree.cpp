@@ -4,7 +4,7 @@
 #include <stack>
 
 // Constructor implementations
-Tree::Tree() : root(nullptr) {}
+Tree::Tree() : root(nullptr), maxDegree(2) {}
 
 Tree::Tree(unsigned int degree) : root(nullptr), maxDegree(degree) {}
 
@@ -15,7 +15,6 @@ Tree::~Tree() {
 // Method implementations
 void Tree::add_root(BaseNode* root_node) {
     root = root_node;
-    std::cout << "Added root node with value: " << root_node->get_value() << std::endl;
 }
 
 BaseNode* Tree::get_root() const {
@@ -157,45 +156,73 @@ Tree::PreOrderIterator Tree::end_pre_order() const {
 
 // PostOrderIterator implementations
 Tree::PostOrderIterator::PostOrderIterator(BaseNode* root, bool useDFS) : useDFS(useDFS) {
-    if (root) {
-        stack.push({root, false});
-        expandTop();
+    if (useDFS) {
+        if (root) {
+            dfsStack.push(root);
+        }
+    } else {
+        if (root) {
+            stack.push({root, false});
+            expandTop();
+        }
     }
 }
 
 void Tree::PostOrderIterator::expandTop() {
-    while (!stack.empty() && !stack.top().second) {
-        auto [node, visited] = stack.top();
-        stack.pop();
-        stack.push({node, true});
-        for (auto it = node->children.rbegin(); it != node->children.rend(); ++it) {
-            if (*it != nullptr) {
-                stack.push({*it, false});
-            } else {
-                throw std::runtime_error("Error: Encountered null or invalid child node!");
+    while (!stack.empty()) {
+        auto& [node, visited] = stack.top();
+        if (visited) {
+            stack.pop();
+            dfsStack.push(node);
+            break;
+        } else {
+            stack.pop();
+            stack.push({node, true});
+            auto& children = node->children;
+            for (auto it = children.rbegin(); it != children.rend(); ++it) {
+                if (*it != nullptr) {
+                    stack.push({*it, false});
+                } else {
+                    throw std::runtime_error("Error: Encountered null or invalid child node!");
+                }
             }
         }
-    }
-    if (!stack.empty()) {
-        next.push(stack.top().first);
     }
 }
 
 BaseNode* Tree::PostOrderIterator::operator*() {
-    return next.top();
+    if (useDFS) {
+        return dfsStack.top();
+    } else {
+        return dfsStack.top();
+    }
 }
 
 Tree::PostOrderIterator& Tree::PostOrderIterator::operator++() {
-    next.pop();
-    if (!stack.empty()) {
-        stack.pop();
+    if (useDFS) {
+        BaseNode* currentNode = dfsStack.top();
+        dfsStack.pop();
+        auto& children = currentNode->children;
+        for (auto it = children.rbegin(); it != children.rend(); ++it) {
+            if (*it != nullptr) {
+                dfsStack.push(*it);
+            } else {
+                throw std::runtime_error("Error: Encountered null or invalid child node!");
+            }
+        }
+    } else {
+        dfsStack.pop();
         expandTop();
     }
     return *this;
 }
 
 bool Tree::PostOrderIterator::operator!=(const PostOrderIterator& other) const {
-    return !next.empty();
+    if (useDFS) {
+        return !dfsStack.empty();
+    } else {
+        return !dfsStack.empty();
+    }
 }
 
 Tree::PostOrderIterator Tree::begin_post_order() const {
@@ -270,47 +297,77 @@ Tree::InOrderIterator Tree::end_in_order() const {
     return InOrderIterator(nullptr, maxDegree > 2);
 }
 
-// HeapIterator implementations
-Tree::HeapIterator::HeapIterator(const std::vector<BaseNode*>& nodes) : heap(nodes), index(0) {
-    heapify();
-}
-
-void Tree::HeapIterator::heapify() {
-    auto comparator = [](BaseNode* a, BaseNode* b) {
-        return a->get_ascii_value() < b->get_ascii_value();
-    };
-    std::make_heap(heap.begin(), heap.end(), comparator);
-    std::sort_heap(heap.begin(), heap.end(), comparator);
-}
-
-BaseNode* Tree::HeapIterator::operator*() {
-    return heap[index];
-}
-
-Tree::HeapIterator& Tree::HeapIterator::operator++() {
-    ++index;
-    return *this;
-}
-
-bool Tree::HeapIterator::operator!=(const HeapIterator& other) const {
-    return index != other.index;
-}
-
-Tree::HeapIterator Tree::begin_heap() const {
-    std::vector<BaseNode*> nodes;
-    for (auto it = begin_in_order(); it != end_in_order(); ++it) {
-        nodes.push_back(*it);
-    }
-    return HeapIterator(nodes);
-}
-
-Tree::HeapIterator Tree::end_heap() const {
-    return HeapIterator({});
-}
-
 // Stream insertion
 std::ostream& operator<<(std::ostream& os, const Tree& tree) {
     GUI gui;
     gui.renderTree(tree);
     return os;
+}
+
+// Function to create a min-heap tree from the given tree
+// Function to create a min-heap tree from the given tree
+Tree Tree::myHeap() const {
+    if (maxDegree != 2) {
+        throw std::runtime_error("Error: Tree is not a binary tree (maxDegree != 2)");
+    }
+
+    // Collect all nodes in BFS order
+    std::vector<BaseNode*> nodes;
+    for (auto it = begin_bfs(); it != end_bfs(); ++it) {
+        nodes.push_back(*it);
+    }
+
+    // Sort nodes based on ASCII value to form a min-heap
+    std::sort(nodes.begin(), nodes.end(), [](BaseNode* a, BaseNode* b) {
+        return a->get_ascii_value() < b->get_ascii_value();
+    });
+
+    // Create a new tree with maxDegree 2
+    Tree heapTree(2);
+    if (nodes.empty()) return heapTree;
+
+    // Use a vector to store the new nodes
+    std::vector<BaseNode*> newNodes;
+    for (BaseNode* node : nodes) {
+        if (dynamic_cast<Node<std::string>*>(node)) {
+            newNodes.push_back(new Node<std::string>(dynamic_cast<Node<std::string>*>(node)->value));
+        } else if (dynamic_cast<Node<int>*>(node)) {
+            newNodes.push_back(new Node<int>(dynamic_cast<Node<int>*>(node)->value));
+        } else if (dynamic_cast<Node<double>*>(node)) {
+            newNodes.push_back(new Node<double>(dynamic_cast<Node<double>*>(node)->value));
+        } else if (dynamic_cast<Node<Complex<int, double>>*>(node)) {
+            newNodes.push_back(new Node<Complex<int, double>>(dynamic_cast<Node<Complex<int, double>>*>(node)->value));
+        } else if (dynamic_cast<Node<Complex<double, int>>*>(node)) {
+            newNodes.push_back(new Node<Complex<double, int>>(dynamic_cast<Node<Complex<double, int>>*>(node)->value));
+        }
+    }
+
+    // Add root node
+    heapTree.add_root(newNodes[0]);
+
+    // Use a queue to build the tree level by level
+    std::queue<BaseNode*> queue;
+    queue.push(newNodes[0]);
+
+    size_t index = 1;
+    while (index < newNodes.size()) {
+        BaseNode* current = queue.front();
+        queue.pop();
+
+        // Add left child
+        if (index < newNodes.size()) {
+            heapTree.add_sub_node(current, newNodes[index]);
+            queue.push(newNodes[index]);
+            index++;
+        }
+
+        // Add right child
+        if (index < newNodes.size()) {
+            heapTree.add_sub_node(current, newNodes[index]);
+            queue.push(newNodes[index]);
+            index++;
+        }
+    }
+
+    return heapTree;
 }

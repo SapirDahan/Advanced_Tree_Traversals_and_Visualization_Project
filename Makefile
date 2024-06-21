@@ -14,7 +14,7 @@ SOURCES=Demo.cpp tree.cpp gui.cpp Complex.cpp
 OBJECTS=$(subst .cpp,.o,$(SOURCES))
 
 # Test files
-TEST_SOURCES=Tests.cpp TestCounter.cpp Complex.cpp tree.cpp
+TEST_SOURCES=Tests.cpp TestCounter.cpp Complex.cpp tree.cpp gui.cpp
 TEST_OBJECTS=$(subst .cpp,.o,$(TEST_SOURCES))
 
 run: tree
@@ -24,7 +24,7 @@ tree: $(OBJECTS)
 	$(CXX) $(CXXFLAGS) $^ -o tree $(SFML_LIBS)
 
 test: $(TEST_OBJECTS)
-	$(CXX) $(CXXFLAGS) $^ -o test -pthread
+	$(CXX) $(CXXFLAGS) $^ -o test -pthread $(SFML_LIBS)
 
 # tidy:
 #	clang-tidy $(SOURCES) -checks=bugprone-*,clang-analyzer-*,cppcoreguidelines-*,performance-*,portability-*,readability-*,-cppcoreguidelines-pro-bounds-pointer-arithmetic,-cppcoreguidelines-owning-memory --warnings-as-errors=-* --
