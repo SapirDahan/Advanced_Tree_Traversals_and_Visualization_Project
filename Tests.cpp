@@ -1,3 +1,9 @@
+/*
+ * Author: Sapir Dahan
+ * ID: 325732972
+ * Mail: sapirdahan2003@gmail.com
+ */
+
 #include "doctest.h"
 #include "Complex.hpp"
 #include "node.hpp"
@@ -206,4 +212,91 @@ TEST_CASE("Tree traversal tests") {
         }
         CHECK(result == std::vector<std::string>{"complex", "1+2.5i", "3.14+7i", "5-1.5i", "2.71+3i", "42", "6.28", "n7", "n8", "n9", "-3+1.1i", "10+2.2i"});
     }
+
+}
+
+// Function to create a string tree
+Tree create_string_tree() {
+    auto root_node = new Node<std::string>("node5");
+    Tree tree(2);
+    tree.add_root(root_node);
+
+    auto n1 = new Node<std::string>("node3");
+    auto n2 = new Node<std::string>("node8");
+    auto n3 = new Node<std::string>("node1");
+    auto n4 = new Node<std::string>("node4");
+    auto n5 = new Node<std::string>("node7");
+    auto n6 = new Node<std::string>("node9");
+    auto n7 = new Node<std::string>("node6");
+
+    tree.add_sub_node(root_node, n1);
+    tree.add_sub_node(root_node, n2);
+    tree.add_sub_node(n1, n3);
+    tree.add_sub_node(n1, n4);
+    tree.add_sub_node(n2, n5);
+    tree.add_sub_node(n2, n6);
+    tree.add_sub_node(n5, n7);
+
+    return tree;
+}
+
+// Test the myHeap function
+TEST_CASE("Tree myHeap tests") {
+    // String tree test
+    Tree stringTree = create_string_tree();
+
+    Tree heapTree;
+    REQUIRE_NOTHROW(heapTree = stringTree.myHeap());
+
+    std::vector<std::string> expected_heap_bfs = {"node1", "node3", "node4", "node5", "node6", "node7", "node8", "node9"};
+    std::vector<std::string> result;
+
+    for (auto node_ptr : heapTree) {
+        result.push_back(node_ptr->get_value());
+    }
+
+    CHECK(result == expected_heap_bfs);
+}
+
+// Function to create a mixed type tree
+Tree create_mixed_type_tree() {
+    auto root_node = new Node<std::string>("node5");
+    Tree tree(2);
+    tree.add_root(root_node);
+
+    auto n1 = new Node<int>(3); // ASCII sum = 51
+    auto n2 = new Node<Complex<int, double>>(Complex<int, double>(2, 1.1)); // ASCII sum = 342
+    auto n3 = new Node<double>(1.5); // ASCII sum = 148
+    auto n4 = new Node<std::string>("node4"); // ASCII sum = 474
+    auto n5 = new Node<std::string>("node7"); // ASCII sum = 477
+    auto n6 = new Node<double>(9.8); // ASCII sum = 159
+    auto n7 = new Node<int>(6); // ASCII sum = 54
+
+    tree.add_sub_node(root_node, n1);
+    tree.add_sub_node(root_node, n2);
+    tree.add_sub_node(n1, n3);
+    tree.add_sub_node(n1, n4);
+    tree.add_sub_node(n2, n5);
+    tree.add_sub_node(n2, n6);
+    tree.add_sub_node(n5, n7);
+
+    return tree;
+}
+
+// Test the myHeap function with mixed types
+TEST_CASE("Tree myHeap mixed type tests") {
+    // Mixed type tree test
+    Tree mixedTypeTree = create_mixed_type_tree();
+
+    Tree heapTree;
+    REQUIRE_NOTHROW(heapTree = mixedTypeTree.myHeap());
+
+    std::vector<std::string> expected_heap_bfs = {"3", "6", "1.5", "9.8", "2+1.1i", "node4", "node5", "node7"};;
+    std::vector<std::string> result;
+
+    for (auto node_ptr : heapTree) {
+        result.push_back(node_ptr->get_value());
+    }
+
+    CHECK((result == expected_heap_bfs));
 }

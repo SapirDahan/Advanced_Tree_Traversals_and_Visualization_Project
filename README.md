@@ -1,3 +1,8 @@
+<!-- * Author: Sapir Dahan -->
+<!--ID: 325732972 -->
+<!-- * Mail: sapirdahan2003@gmail.com -->
+
+
 # Tree Traversal and Manipulation Project
 
 ## Author: Sapir Dahan
@@ -102,3 +107,22 @@ int main() {
 
     return 0;
 }
+```
+
+## Example Trees
+
+### Demo 1: Sample Tree
+![Demo 1 Tree](Images/1.png)
+
+### Demo 2: Another Sample Tree
+![Demo 2 Tree](Images/2.png)
+
+### Demo 3: Complex Tree
+![Demo 3 Tree](Images/3.png)
+
+### Demo 4: String Tree - Original
+![Demo 4 Original Tree](Images/4.png)
+
+### Demo 4: String Tree - Min-Heap
+![Demo 4 Min-Heap Tree](Images/5.png)
+

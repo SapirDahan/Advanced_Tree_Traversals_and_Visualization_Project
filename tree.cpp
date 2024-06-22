@@ -1,3 +1,9 @@
+/*
+ * Author: Sapir Dahan
+ * ID: 325732972
+ * Mail: sapirdahan2003@gmail.com
+ */
+
 #include "tree.hpp"
 #include "gui.hpp"
 #include <stdexcept>

@@ -1,5 +1,10 @@
-#ifndef NODE_HPP
-#define NODE_HPP
+/*
+ * Author: Sapir Dahan
+ * ID: 325732972
+ * Mail: sapirdahan2003@gmail.com
+ */
+
+#pragma once
 
 #include <vector>
 #include <string>
@@ -63,4 +68,3 @@ public:
     }
 };
 
-#endif // NODE_HPP

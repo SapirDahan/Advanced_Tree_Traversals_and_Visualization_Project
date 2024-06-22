@@ -1,3 +1,9 @@
+/*
+ * Author: Sapir Dahan
+ * ID: 325732972
+ * Mail: sapirdahan2003@gmail.com
+ */
+
 #include <iostream>
 #include <string>
 #include "node.hpp"
@@ -170,8 +176,6 @@ Tree create_string_tree() {
 
     return tree;
 }
-
-
 
 
 int main() {

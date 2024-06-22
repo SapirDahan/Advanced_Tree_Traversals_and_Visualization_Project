@@ -1,5 +1,10 @@
-#ifndef COMPLEX_HPP
-#define COMPLEX_HPP
+/*
+ * Author: Sapir Dahan
+ * ID: 325732972
+ * Mail: sapirdahan2003@gmail.com
+ */
+
+# pragma once
 
 #include <iostream>
 #include <sstream>
@@ -27,4 +32,3 @@ public:
 
 };
 
-#endif // COMPLEX_HPP

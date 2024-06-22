@@ -1,5 +1,10 @@
-#ifndef TREE_HPP
-#define TREE_HPP
+/*
+ * Author: Sapir Dahan
+ * ID: 325732972
+ * Mail: sapirdahan2003@gmail.com
+ */
+
+#pragma once
 
 #include "node.hpp"
 #include <vector>
@@ -121,5 +126,3 @@ public:
     Tree myHeap() const;
 
 };
-
-#endif // TREE_HPP
