@@ -17,7 +17,7 @@ Tree::Tree(unsigned int degree) : root(nullptr), maxDegree(degree) {}
 
 // Destructor
 Tree::~Tree() {
-    delete root;
+    //delete root;
 }
 
 // Method to set the root node of the tree
@@ -385,28 +385,28 @@ Tree Tree::myHeap() const {
     Tree heapTree(2);
     if (nodes.empty()) return heapTree;
 
-    // Use a vector to store the new nodes
-    std::vector<BaseNode*> newNodes;
+    // Use unique_ptr to store the new nodes
+    std::vector<std::unique_ptr<BaseNode>> newNodes;
     for (BaseNode* node : nodes) {
-        if (dynamic_cast<Node<std::string>*>(node)) {
-            newNodes.push_back(new Node<std::string>(dynamic_cast<Node<std::string>*>(node)->value));
-        } else if (dynamic_cast<Node<int>*>(node)) {
-            newNodes.push_back(new Node<int>(dynamic_cast<Node<int>*>(node)->value));
-        } else if (dynamic_cast<Node<double>*>(node)) {
-            newNodes.push_back(new Node<double>(dynamic_cast<Node<double>*>(node)->value));
-        } else if (dynamic_cast<Node<Complex<int, double>>*>(node)) {
-            newNodes.push_back(new Node<Complex<int, double>>(dynamic_cast<Node<Complex<int, double>>*>(node)->value));
-        } else if (dynamic_cast<Node<Complex<double, int>>*>(node)) {
-            newNodes.push_back(new Node<Complex<double, int>>(dynamic_cast<Node<Complex<double, int>>*>(node)->value));
+        if (auto strNode = dynamic_cast<Node<std::string>*>(node)) {
+            newNodes.push_back(std::make_unique<Node<std::string>>(strNode->value));
+        } else if (auto intNode = dynamic_cast<Node<int>*>(node)) {
+            newNodes.push_back(std::make_unique<Node<int>>(intNode->value));
+        } else if (auto doubleNode = dynamic_cast<Node<double>*>(node)) {
+            newNodes.push_back(std::make_unique<Node<double>>(doubleNode->value));
+        } else if (auto complexNode1 = dynamic_cast<Node<Complex<int, double>>*>(node)) {
+            newNodes.push_back(std::make_unique<Node<Complex<int, double>>>(complexNode1->value));
+        } else if (auto complexNode2 = dynamic_cast<Node<Complex<double, int>>*>(node)) {
+            newNodes.push_back(std::make_unique<Node<Complex<double, int>>>(complexNode2->value));
         }
     }
 
     // Add root node
-    heapTree.add_root(newNodes[0]);
+    heapTree.add_root(newNodes[0].get());
 
     // Use a queue to build the tree level by level
     std::queue<BaseNode*> queue;
-    queue.push(newNodes[0]);
+    queue.push(newNodes[0].get());
 
     size_t index = 1;
     while (index < newNodes.size()) {
@@ -415,18 +415,24 @@ Tree Tree::myHeap() const {
 
         // Add left child
         if (index < newNodes.size()) {
-            heapTree.add_sub_node(current, newNodes[index]);
-            queue.push(newNodes[index]);
+            heapTree.add_sub_node(current, newNodes[index].get());
+            queue.push(newNodes[index].get());
             index++;
         }
 
         // Add right child
         if (index < newNodes.size()) {
-            heapTree.add_sub_node(current, newNodes[index]);
-            queue.push(newNodes[index]);
+            heapTree.add_sub_node(current, newNodes[index].get());
+            queue.push(newNodes[index].get());
             index++;
         }
     }
 
+    // Release ownership of nodes to the heapTree
+    for (auto& node : newNodes) {
+        node.release();
+    }
+
     return heapTree;
 }
+

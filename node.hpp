@@ -21,12 +21,12 @@
  */
 class BaseNode {
 public:
-    virtual ~BaseNode() {
-        // Delete all child nodes
-        for (BaseNode* child : children) {
-            delete child;
-        }
-    }
+//    virtual ~BaseNode() {
+//        // Delete all child nodes
+//        for (BaseNode* child : children) {
+//            delete child;
+//        }
+//    }
 
     /**
      * @brief Get the value of the node as a string.
@@ -76,7 +76,7 @@ public:
     /**
      * @brief Destructor to clean up child nodes.
      */
-    ~Node() override = default;
+    //~Node() override = default;
 
     /**
      * @brief Get the value of the node as a string.
