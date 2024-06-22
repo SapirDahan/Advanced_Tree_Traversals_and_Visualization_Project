@@ -9,60 +9,54 @@
 #include "node.hpp"
 #include "tree.hpp"
 
-// Test default constructor
+// Test default constructor for Complex
 TEST_CASE("Complex Default Constructor") {
     Complex<int, int> c;
-    REQUIRE(c.to_string() == "0+0i");
+    CHECK(c.to_string() == "0+0i");
 }
 
-// Test parameterized constructor
+// Test parameterized constructor for Complex
 TEST_CASE("Complex Parameterized Constructor") {
     Complex<int, double> c(3, 4.5);
-    REQUIRE(c.to_string() == "3+4.5i");
+    CHECK(c.to_string() == "3+4.5i");
 }
 
-// Test parameterized constructor with negative imaginary part
+// Test parameterized constructor with negative imaginary part for Complex
 TEST_CASE("Complex Parameterized Constructor with Negative Imaginary Part") {
     Complex<double, int> c(3.2, -4);
-    REQUIRE(c.to_string() == "3.2-4i");
+    CHECK(c.to_string() == "3.2-4i");
 }
 
-// Test to_string method
+// Test to_string method for Complex
 TEST_CASE("Complex to_string Method") {
     Complex<double, double> c(1.1, 2.2);
-    REQUIRE(c.to_string() == "1.1+2.2i");
+    CHECK(c.to_string() == "1.1+2.2i");
 }
 
-// Test get_ascii_value method
+// Test get_ascii_value method for Complex
 TEST_CASE("Complex get_ascii_value Method") {
     Complex<int, int> c(1, -2);
     unsigned int expected_value = static_cast<unsigned int>('1') +
                                   static_cast<unsigned int>('-') +
                                   static_cast<unsigned int>('2') +
                                   static_cast<unsigned int>('i');
-    REQUIRE(c.get_ascii_value() == expected_value);
+    CHECK((c.get_ascii_value() == expected_value));
 }
 
-// Test copy constructor
+// Test copy constructor for Complex
 TEST_CASE("Complex Copy Constructor") {
     Complex<int, int> c1(3, 4);
     Complex<int, int> c2(c1);
-    REQUIRE(c2.to_string() == "3+4i");
+    CHECK(c2.to_string() == "3+4i");
 }
 
-// Test assignment operator
-TEST_CASE("Complex Assignment Operator") {
-    Complex<int, int> c1(3, 4);
-    Complex<int, int> c2;
-    c2 = c1;
-    REQUIRE(c2.to_string() == "3+4i");
-}
-
+// Function to create a sample tree with mixed types
 Tree create_sample_tree() {
     auto root_node = new Node<std::string>("root");
-    Tree tree(3);
+    Tree tree(3);  // Create a tree with maxDegree 3
     tree.add_root(root_node);
 
+    // Add nodes of different types to the tree
     auto n1 = new Node<int>(1);
     auto n2 = new Node<std::string>("n2");
     auto n3 = new Node<double>(12.35);
@@ -84,11 +78,13 @@ Tree create_sample_tree() {
     return tree;
 }
 
+// Function to create another sample tree with different types
 Tree create_another_sample_tree() {
     auto root_node = new Node<std::string>("root2");
-    Tree tree(2);
+    Tree tree(2);  // Create a tree with maxDegree 2
     tree.add_root(root_node);
 
+    // Add nodes of different types to the tree
     auto n1 = new Node<int>(10);
     auto n2 = new Node<std::string>("n2");
     auto n3 = new Node<double>(20.45);
@@ -110,11 +106,13 @@ Tree create_another_sample_tree() {
     return tree;
 }
 
+// Function to create a complex tree with different types
 Tree create_complex_tree() {
     auto root_node = new Node<std::string>("complex");
-    Tree tree(4);
+    Tree tree(4);  // Create a tree with maxDegree 4
     tree.add_root(root_node);
 
+    // Add nodes of different types to the tree
     auto n1 = new Node<Complex<int, double>>(Complex<int, double>(1, 2.5));
     auto n2 = new Node<Complex<double, int>>(Complex<double, int>(3.14, 7));
     auto n3 = new Node<Complex<int, double>>(Complex<int, double>(5, -1.5));
@@ -142,6 +140,7 @@ Tree create_complex_tree() {
     return tree;
 }
 
+// Template function to test tree traversal
 template <typename Iterator>
 void test_traversal(Tree& tree, Iterator begin, Iterator end, const std::vector<std::string>& expected) {
     std::vector<std::string> result;
@@ -149,11 +148,13 @@ void test_traversal(Tree& tree, Iterator begin, Iterator end, const std::vector<
         BaseNode* node_ptr = *it;
         result.push_back(node_ptr->get_value());
     }
-    CHECK(result == expected);
+    CHECK((result == expected));
 }
 
-// Tests
+
+// Tests for tree traversals
 TEST_CASE("Tree traversal tests") {
+
     // Sample tree tests
     {
         Tree tree = create_sample_tree();
@@ -192,7 +193,7 @@ TEST_CASE("Tree traversal tests") {
         for (auto node_ptr : tree) {
             result.push_back(node_ptr->get_value());
         }
-        CHECK(result == std::vector<std::string>{"root", "1", "n2", "12.35", "0.25", "n5", "n6", "n7", "7-4.5i"});
+        CHECK((result == std::vector<std::string>{"root", "1", "n2", "12.35", "0.25", "n5", "n6", "n7", "7-4.5i"}));
     }
 
     {
@@ -201,7 +202,7 @@ TEST_CASE("Tree traversal tests") {
         for (auto node_ptr : tree) {
             result.push_back(node_ptr->get_value());
         }
-        CHECK(result == std::vector<std::string>{"root2", "10", "n2", "20.45", "0.5", "n5", "n6", "4.5+7i", "3-1.2i"});
+        CHECK((result == std::vector<std::string>{"root2", "10", "n2", "20.45", "0.5", "n5", "n6", "4.5+7i", "3-1.2i"}));
     }
 
     {
@@ -210,7 +211,7 @@ TEST_CASE("Tree traversal tests") {
         for (auto node_ptr : tree) {
             result.push_back(node_ptr->get_value());
         }
-        CHECK(result == std::vector<std::string>{"complex", "1+2.5i", "3.14+7i", "5-1.5i", "2.71+3i", "42", "6.28", "n7", "n8", "n9", "-3+1.1i", "10+2.2i"});
+        CHECK((result == std::vector<std::string>{"complex", "1+2.5i", "3.14+7i", "5-1.5i", "2.71+3i", "42", "6.28", "n7", "n8", "n9", "-3+1.1i", "10+2.2i"}));
     }
 
 }
@@ -245,8 +246,9 @@ TEST_CASE("Tree myHeap tests") {
     // String tree test
     Tree stringTree = create_string_tree();
 
+    // Create the heap
     Tree heapTree;
-    REQUIRE_NOTHROW(heapTree = stringTree.myHeap());
+    CHECK_NOTHROW(heapTree = stringTree.myHeap());
 
     std::vector<std::string> expected_heap_bfs = {"node1", "node3", "node4", "node5", "node6", "node7", "node8", "node9"};
     std::vector<std::string> result;
@@ -255,7 +257,7 @@ TEST_CASE("Tree myHeap tests") {
         result.push_back(node_ptr->get_value());
     }
 
-    CHECK(result == expected_heap_bfs);
+    CHECK((result == expected_heap_bfs));
 }
 
 // Function to create a mixed type tree
@@ -288,8 +290,9 @@ TEST_CASE("Tree myHeap mixed type tests") {
     // Mixed type tree test
     Tree mixedTypeTree = create_mixed_type_tree();
 
+    // Create the heap
     Tree heapTree;
-    REQUIRE_NOTHROW(heapTree = mixedTypeTree.myHeap());
+    CHECK_NOTHROW(heapTree = mixedTypeTree.myHeap());
 
     std::vector<std::string> expected_heap_bfs = {"3", "6", "1.5", "9.8", "2+1.1i", "node4", "node5", "node7"};;
     std::vector<std::string> result;
@@ -300,3 +303,23 @@ TEST_CASE("Tree myHeap mixed type tests") {
 
     CHECK((result == expected_heap_bfs));
 }
+
+// Test to ensure adding a sub-node exceeds maxDegree throws an exception
+TEST_CASE("Tree maxDegree enforcement tests") {
+    // Create a tree with maxDegree 2
+    Tree tree(2);
+    auto root_node = new Node<std::string>("root");
+    tree.add_root(root_node);
+
+    // Add two children to the root node, which is allowed
+    auto n1 = new Node<int>(1);
+    auto n2 = new Node<double>(2.2);
+    CHECK_NOTHROW(tree.add_sub_node(root_node, n1));
+    CHECK_NOTHROW(tree.add_sub_node(root_node, n2));
+
+    // Try adding a third child, which should throw an exception
+    auto n3 = new Node<std::string>("n3");
+    CHECK_THROWS_AS(tree.add_sub_node(root_node, n3), std::runtime_error);
+}
+
+

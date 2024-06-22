@@ -7,36 +7,50 @@
 #include "Complex.hpp"
 
 // Constructor implementations
+
+/**
+ * @brief Default constructor initializes real and imaginary parts to zero.
+ */
 template <typename RealType, typename ImagType>
 Complex<RealType, ImagType>::Complex() : real(0), imag(0) {}
 
+/**
+ * @brief Parameterized constructor initializes real and imaginary parts to given values.
+ * @param r The real part of the complex number.
+ * @param i The imaginary part of the complex number.
+ */
 template <typename RealType, typename ImagType>
 Complex<RealType, ImagType>::Complex(RealType r, ImagType i) : real(r), imag(i) {}
 
-// Convert to string
+/**
+ * @brief Converts the complex number to a string representation.
+ * @return A string in the format "real+imaginaryi" or "real-imaginaryi".
+ */
 template <typename RealType, typename ImagType>
 std::string Complex<RealType, ImagType>::to_string() const {
     std::ostringstream out;
-    out << real;
-    if (imag >= 0) out << "+";
-    out << imag << "i";
+    out << real;  // Add the real part to the string
+    if (imag >= 0) out << "+";  // Add "+" if the imaginary part is non-negative
+    out << imag << "i";  // Add the imaginary part and the "i"
     return out.str();
 }
 
-// Calculate ASCII sum of the string representation
+/**
+ * @brief Calculates the ASCII sum of the string representation of the complex number.
+ * @return The ASCII sum of the string representation.
+ */
 template <typename RealType, typename ImagType>
 unsigned int Complex<RealType, ImagType>::get_ascii_value() const {
     std::string str_value = to_string();
     unsigned int ascii_sum = 0;
     for (char c : str_value) {
-        ascii_sum += static_cast<unsigned int>(c);
+        ascii_sum += static_cast<unsigned int>(c);  // Sum up ASCII values of all characters in the string
     }
     return ascii_sum;
 }
 
-// Explicit template instantiation for common types
+// Explicit template instantiation definitions for common types
 template class Complex<int, int>;
 template class Complex<int, double>;
 template class Complex<double, double>;
 template class Complex<double, int>;
-

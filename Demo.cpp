@@ -12,7 +12,10 @@
 
 using namespace std;
 
-// Function to demonstrate tree traversal and printing
+/**
+ * @brief Function to demonstrate tree traversal and printing
+ * @param tree The tree to traverse and print
+ */
 void demonstrate_tree(const Tree& tree) {
     try {
         // Pre-order traversal
@@ -50,6 +53,7 @@ void demonstrate_tree(const Tree& tree) {
             std::cout << node_ptr->get_value() << " ";
         }
 
+        // Range-based for loop (BFS traversal)
         std::cout << "\n\nRange-based for loop (BFS traversal):" << std::endl;
         for (auto node_ptr : tree) {
             std::cout << node_ptr->get_value() << " ";
@@ -57,6 +61,7 @@ void demonstrate_tree(const Tree& tree) {
 
         std::cout << "\n" << std::endl;
 
+        // Render the tree using the GUI
         std::cout << tree;
     } catch (const std::exception& e) {
         std::cerr << "Exception: " << e.what() << std::endl;
@@ -65,7 +70,10 @@ void demonstrate_tree(const Tree& tree) {
     }
 }
 
-// Function to create and return a sample tree
+/**
+ * @brief Function to create and return a sample tree
+ * @return Tree A sample tree
+ */
 Tree create_sample_tree() {
     auto root_node = new Node<string>("root");
     Tree tree(3);
@@ -92,10 +100,13 @@ Tree create_sample_tree() {
     return tree;
 }
 
-// Function to create and return another sample tree
+/**
+ * @brief Function to create and return another sample tree
+ * @return Tree Another sample tree
+ */
 Tree create_another_sample_tree() {
     auto root_node = new Node<string>("root2");
-    Tree tree;
+    Tree tree(2);
     tree.add_root(root_node);
 
     auto n1 = new Node<int>(10);
@@ -119,7 +130,10 @@ Tree create_another_sample_tree() {
     return tree;
 }
 
-// Function to create a more complex tree
+/**
+ * @brief Function to create and return a more complex tree
+ * @return Tree A complex tree
+ */
 Tree create_complex_tree() {
     auto root_node = new Node<string>("complex");
     Tree tree(4);
@@ -135,7 +149,7 @@ Tree create_complex_tree() {
     auto n8 = new Node<string>("n8");
     auto n9 = new Node<string>("n9");
     auto n10 = new Node<Complex<int, double>>(Complex<int, double>(-3, 1.1));
-    auto n11 = new Node<Complex<int, double>>(Complex<int, double>(10, 2.2)); // Additional node for n8
+    auto n11 = new Node<Complex<int, double>>(Complex<int, double>(10, 2.2));
 
     tree.add_sub_node(root_node, n1);
     tree.add_sub_node(root_node, n2);
@@ -152,7 +166,10 @@ Tree create_complex_tree() {
     return tree;
 }
 
-// Function to create and return a tree with only strings
+/**
+ * @brief Function to create and return a tree with only strings
+ * @return Tree A tree with only string nodes
+ */
 Tree create_string_tree() {
     auto root_node = new Node<string>("node5");
     Tree tree(2);
@@ -177,7 +194,14 @@ Tree create_string_tree() {
     return tree;
 }
 
-
+/**
+ * @brief Main function to demonstrate tree traversals and heap creation.
+ *
+ * The main function creates different types of trees, demonstrates their traversals,
+ * and creates a min-heap from a string tree.
+ *
+ * @return int Exit status of the program.
+ */
 int main() {
     // Redirect stderr to /dev/null
     freopen("/dev/null", "w", stderr);
@@ -194,14 +218,11 @@ int main() {
     Tree tree3 = create_complex_tree();
     demonstrate_tree(tree3);
 
-
-    std::cout << "\n\nDemo 4 (String Tree - Min-Heap):" << std::endl;
+    std::cout << "\n\nDemo 4 (String Tree - Original):" << std::endl;
     Tree stringTree = create_string_tree();
-
-    std::cout << "\n\nThe tree before:" << std::endl;
     demonstrate_tree(stringTree);
 
-    std::cout << "\n\nThe min heap:" << std::endl;
+    std::cout << "\n\nDemo 4 (String Tree - Min-Heap):" << std::endl;
     try {
         Tree heapTree = stringTree.myHeap();
         demonstrate_tree(heapTree);
