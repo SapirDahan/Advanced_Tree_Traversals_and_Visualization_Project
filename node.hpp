@@ -21,7 +21,12 @@
  */
 class BaseNode {
 public:
-    virtual ~BaseNode();
+    virtual ~BaseNode() {
+        // Delete all child nodes
+        for (BaseNode* child : children) {
+            delete child;
+        }
+    }
 
     /**
      * @brief Get the value of the node as a string.
@@ -69,7 +74,7 @@ public:
     Node(T val) : value(val) {}
 
     /**
-     * @brief Destructor for the Node class.
+     * @brief Destructor to clean up child nodes.
      */
     ~Node() override = default;
 
@@ -113,3 +118,4 @@ public:
         return ascii_sum;  // Return the ASCII sum
     }
 };
+
