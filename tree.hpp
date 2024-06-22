@@ -17,8 +17,8 @@
  */
 class Tree {
 private:
-    BaseNode* root;             ///< Pointer to the root node of the tree.
-    unsigned int maxDegree;     ///< Maximum number of children each node can have.
+    std::shared_ptr<BaseNode> root;  ///< Pointer to the root node of the tree.
+    unsigned int maxDegree;          ///< Maximum number of children each node can have.
 
 public:
     /**
@@ -41,7 +41,7 @@ public:
      * @brief Sets the root node of the tree.
      * @param root_node Pointer to the root node.
      */
-    void add_root(BaseNode* root_node);
+    void add_root(std::shared_ptr<BaseNode> root_node);
 
     /**
      * @brief Gets the root node of the tree.
@@ -55,7 +55,7 @@ public:
      * @param child Pointer to the child node.
      * @throw std::runtime_error if the parent has reached the maximum number of children or if parent/child is null.
      */
-    void add_sub_node(BaseNode* parent, BaseNode* child);
+    void add_sub_node(BaseNode* parent, std::shared_ptr<BaseNode> child);
 
     /**
      * @brief BFS (Breadth-First Search) iterator class for traversing the tree.

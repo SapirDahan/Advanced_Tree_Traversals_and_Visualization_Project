@@ -13,6 +13,7 @@
 #include <sstream>
 #include <iomanip>
 #include <stdexcept>
+#include <memory>
 #include "Complex.hpp"
 
 /**
@@ -21,12 +22,7 @@
  */
 class BaseNode {
 public:
-//    virtual ~BaseNode() {
-//        // Delete all child nodes
-//        for (BaseNode* child : children) {
-//            delete child;
-//        }
-//    }
+    virtual ~BaseNode() = default;
 
     /**
      * @brief Get the value of the node as a string.
@@ -41,14 +37,14 @@ public:
     virtual unsigned int get_ascii_value() const = 0;
 
     // Vector to store child nodes
-    std::vector<BaseNode*> children;
+    std::vector<std::shared_ptr<BaseNode>> children;
 
     /**
      * @brief Add a child node to the current node.
      * @param child The child node to add.
      * @throws std::runtime_error if the child node is null.
      */
-    void add_child(BaseNode* child) {
+    void add_child(std::shared_ptr<BaseNode> child) {
         if (child) {
             children.push_back(child);  // Add the child to the children vector
         } else {
@@ -72,11 +68,6 @@ public:
      * @param val The value to initialize the node with.
      */
     Node(T val) : value(val) {}
-
-    /**
-     * @brief Destructor to clean up child nodes.
-     */
-    //~Node() override = default;
 
     /**
      * @brief Get the value of the node as a string.
@@ -118,4 +109,3 @@ public:
         return ascii_sum;  // Return the ASCII sum
     }
 };
-

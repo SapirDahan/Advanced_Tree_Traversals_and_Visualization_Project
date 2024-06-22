@@ -83,7 +83,7 @@ void GUI::renderNode(sf::RenderWindow& window, BaseNode* node, float x, float y,
 
     // Iterate over each child node and render them recursively
     for (size_t i = 0; i < node->children.size(); i++) {
-        BaseNode* child = node->children[i];
+        BaseNode* child = node->children[i].get();
         float childX = startX + (i + 1) * (adjustedXOffset / (node->children.size() + 1));
 
         // Draw connecting lines between the current node and its children
