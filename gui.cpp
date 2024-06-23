@@ -11,12 +11,13 @@
  * @param tree The tree to render.
  */
 void GUI::renderTree(const Tree& tree) const {
+
     // Create a window for visualization
     sf::RenderWindow window(sf::VideoMode(800, 600), "Tree Visualization");
 
     // Load the font
     sf::Font font;
-    if (!font.loadFromFile("Arial.ttf")) {  // Make sure "Arial.ttf" is in the working directory
+    if (!font.loadFromFile("Arial.ttf")) {
         throw std::runtime_error("Error loading font");
     }
 
@@ -33,7 +34,7 @@ void GUI::renderTree(const Tree& tree) const {
 
         // Render the root node and its children recursively if the root is not null
         if (tree.get_root()) {
-            renderNode(window, tree.get_root(), window.getSize().x / 2, 50, window.getSize().x, font, 0.001);  // Adjust the horizontal spread
+            renderNode(window, tree.get_root(), window.getSize().x / 2, 50, window.getSize().x, font, 0.001);
         }
 
         // Display the rendered frame on the window
@@ -66,7 +67,7 @@ void GUI::renderNode(sf::RenderWindow& window, BaseNode* node, float x, float y,
     sf::Text text;
     text.setFont(font);
     text.setString(node->get_value());
-    text.setCharacterSize(18);  // Adjust text size
+    text.setCharacterSize(18);
     text.setFillColor(sf::Color::White);
 
     // Center the text within the circle
@@ -91,6 +92,7 @@ void GUI::renderNode(sf::RenderWindow& window, BaseNode* node, float x, float y,
                 sf::Vertex(sf::Vector2f(x, y)),
                 sf::Vertex(sf::Vector2f(childX, childY - radius), sf::Color::Black)
         };
+
         window.draw(line, 2, sf::Lines);
 
         // Recursively render the child nodes

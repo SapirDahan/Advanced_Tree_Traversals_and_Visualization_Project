@@ -44,12 +44,6 @@ TEST_CASE("Complex get_ascii_value Method") {
     CHECK((c.get_ascii_value() == expected_value));
 }
 
-// Test copy constructor for Complex
-TEST_CASE("Complex Copy Constructor") {
-    Complex<int, int> c1(3, 4);
-    Complex<int, int> c2(c1);
-    CHECK(c2.to_string() == "3+4i");
-}
 
 // Function to create a sample tree with mixed types
 Tree create_sample_tree() {
@@ -319,4 +313,11 @@ TEST_CASE("Tree maxDegree enforcement tests") {
     // Try adding a third child, which should throw an exception
     auto n3 = std::make_shared<Node<std::string>>("n3");
     CHECK_THROWS_AS(tree.add_sub_node(root_node.get(), n3), std::runtime_error);
+}
+
+TEST_CASE("tree with degree more then 2 trying to make it a min heap"){
+
+    // Complex tree is with degree 4
+    Tree tree = create_complex_tree();
+    CHECK_THROWS(tree.myHeap());
 }

@@ -19,39 +19,35 @@ using namespace std;
  */
 void demonstrate_tree(const Tree& tree) {
     try {
+
         // Pre-order traversal
         std::cout << "Pre-order traversal:" << std::endl;
         for (auto it = tree.begin_pre_order(); it != tree.end_pre_order(); ++it) {
-            BaseNode* node_ptr = *it;
-            std::cout << node_ptr->get_value() << " ";
+            std::cout << (*it)->get_value() << " ";
         }
 
         // Post-order traversal
         std::cout << "\n\nPost-order traversal:" << std::endl;
         for (auto it = tree.begin_post_order(); it != tree.end_post_order(); ++it) {
-            BaseNode* node_ptr = *it;
-            std::cout << node_ptr->get_value() << " ";
+            std::cout << (*it)->get_value() << " ";
         }
 
         // In-order traversal
         std::cout << "\n\nIn-order traversal:" << std::endl;
         for (auto it = tree.begin_in_order(); it != tree.end_in_order(); ++it) {
-            BaseNode* node_ptr = *it;
-            std::cout << node_ptr->get_value() << " ";
-        }
-
-        // BFS traversal
-        std::cout << "\n\nBFS traversal:" << std::endl;
-        for (auto it = tree.begin_bfs(); it != tree.end_bfs(); ++it) {
-            BaseNode* node_ptr = *it;
-            std::cout << node_ptr->get_value() << " ";
+            std::cout << (*it)->get_value() << " ";
         }
 
         // DFS traversal
         std::cout << "\n\nDFS traversal:" << std::endl;
         for (auto it = tree.begin_dfs(); it != tree.end_dfs(); ++it) {
-            BaseNode* node_ptr = *it;
-            std::cout << node_ptr->get_value() << " ";
+            std::cout << (*it)->get_value() << " ";
+        }
+
+        // BFS traversal
+        std::cout << "\n\nBFS traversal:" << std::endl;
+        for (auto it = tree.begin_bfs(); it != tree.end_bfs(); ++it) {
+            std::cout << (*it)->get_value() << " ";
         }
 
         // Range-based for loop (BFS traversal)
@@ -64,9 +60,13 @@ void demonstrate_tree(const Tree& tree) {
 
         // Render the tree using the GUI
         std::cout << tree;
-    } catch (const std::exception& e) {
+    }
+
+    catch (const std::exception& e) {
         std::cerr << "Exception: " << e.what() << std::endl;
-    } catch (...) {
+    }
+
+    catch (...) {
         std::cerr << "Unknown exception occurred!" << std::endl;
     }
 }
@@ -77,9 +77,10 @@ void demonstrate_tree(const Tree& tree) {
  */
 Tree create_sample_tree() {
     auto root_node = std::make_shared<Node<std::string>>("root");
-    Tree tree(3);
+    Tree tree(3);  // Create a tree with maxDegree 3
     tree.add_root(root_node);
 
+    // Add nodes of different types to the tree
     auto n1 = std::make_shared<Node<int>>(1);
     auto n2 = std::make_shared<Node<std::string>>("n2");
     auto n3 = std::make_shared<Node<double>>(12.35);
@@ -89,21 +90,14 @@ Tree create_sample_tree() {
     auto n7 = std::make_shared<Node<std::string>>("n7");
     auto n8 = std::make_shared<Node<Complex<int, double>>>(Complex<int, double>(7, -4.5));
 
-    BaseNode* root = tree.get_root();
-    tree.add_sub_node(root, n1);
-    tree.add_sub_node(root, n2);
-    tree.add_sub_node(root, n3);
-
-    BaseNode* n1_ptr = root->children[0].get();
-    tree.add_sub_node(n1_ptr, n4);
-    tree.add_sub_node(n1_ptr, n5);
-
-    BaseNode* n2_ptr = root->children[1].get();
-    tree.add_sub_node(n2_ptr, n6);
-    tree.add_sub_node(n2_ptr, n7);
-
-    BaseNode* n5_ptr = root->children[0]->children[1].get();
-    tree.add_sub_node(n5_ptr, n8);
+    tree.add_sub_node(root_node.get(), n1);
+    tree.add_sub_node(root_node.get(), n2);
+    tree.add_sub_node(root_node.get(), n3);
+    tree.add_sub_node(n1.get(), n4);
+    tree.add_sub_node(n1.get(), n5);
+    tree.add_sub_node(n2.get(), n6);
+    tree.add_sub_node(n2.get(), n7);
+    tree.add_sub_node(n5.get(), n8);
 
     return tree;
 }
@@ -114,9 +108,10 @@ Tree create_sample_tree() {
  */
 Tree create_another_sample_tree() {
     auto root_node = std::make_shared<Node<std::string>>("root2");
-    Tree tree(2);
+    Tree tree(2);  // Create a tree with maxDegree 2
     tree.add_root(root_node);
 
+    // Add nodes of different types to the tree
     auto n1 = std::make_shared<Node<int>>(10);
     auto n2 = std::make_shared<Node<std::string>>("n2");
     auto n3 = std::make_shared<Node<double>>(20.45);
@@ -126,23 +121,14 @@ Tree create_another_sample_tree() {
     auto n7 = std::make_shared<Node<Complex<double, int>>>(Complex<double, int>(4.5, 7));
     auto n8 = std::make_shared<Node<Complex<int, double>>>(Complex<int, double>(3, -1.2));
 
-    BaseNode* root = tree.get_root();
-    tree.add_sub_node(root, n1);
-    tree.add_sub_node(root, n2);
-
-    BaseNode* n1_ptr = root->children[0].get();
-    tree.add_sub_node(n1_ptr, n3);
-    tree.add_sub_node(n1_ptr, n4);
-
-    BaseNode* n2_ptr = root->children[1].get();
-    tree.add_sub_node(n2_ptr, n5);
-    tree.add_sub_node(n2_ptr, n6);
-
-    BaseNode* n5_ptr = root->children[1]->children[0].get();
-    tree.add_sub_node(n5_ptr, n7);
-
-    BaseNode* n6_ptr = root->children[1]->children[1].get();
-    tree.add_sub_node(n6_ptr, n8);
+    tree.add_sub_node(root_node.get(), n1);
+    tree.add_sub_node(root_node.get(), n2);
+    tree.add_sub_node(n1.get(), n3);
+    tree.add_sub_node(n1.get(), n4);
+    tree.add_sub_node(n2.get(), n5);
+    tree.add_sub_node(n2.get(), n6);
+    tree.add_sub_node(n5.get(), n7);
+    tree.add_sub_node(n6.get(), n8);
 
     return tree;
 }
@@ -153,9 +139,10 @@ Tree create_another_sample_tree() {
  */
 Tree create_complex_tree() {
     auto root_node = std::make_shared<Node<std::string>>("complex");
-    Tree tree(4);
+    Tree tree(4);  // Create a tree with maxDegree 4
     tree.add_root(root_node);
 
+    // Add nodes of different types to the tree
     auto n1 = std::make_shared<Node<Complex<int, double>>>(Complex<int, double>(1, 2.5));
     auto n2 = std::make_shared<Node<Complex<double, int>>>(Complex<double, int>(3.14, 7));
     auto n3 = std::make_shared<Node<Complex<int, double>>>(Complex<int, double>(5, -1.5));
@@ -166,30 +153,19 @@ Tree create_complex_tree() {
     auto n8 = std::make_shared<Node<std::string>>("n8");
     auto n9 = std::make_shared<Node<std::string>>("n9");
     auto n10 = std::make_shared<Node<Complex<int, double>>>(Complex<int, double>(-3, 1.1));
-    auto n11 = std::make_shared<Node<Complex<int, double>>>(Complex<int, double>(10, 2.2));
+    auto n11 = std::make_shared<Node<Complex<int, double>>>(Complex<int, double>(10, 2.2)); // Additional node for n8
 
-    BaseNode* root = tree.get_root();
-    tree.add_sub_node(root, n1);
-    tree.add_sub_node(root, n2);
-    tree.add_sub_node(root, n3);
-    tree.add_sub_node(root, n4);
-
-    BaseNode* n1_ptr = root->children[0].get();
-    tree.add_sub_node(n1_ptr, n5);
-    tree.add_sub_node(n1_ptr, n6);
-
-    BaseNode* n2_ptr = root->children[1].get();
-    tree.add_sub_node(n2_ptr, n7);
-    tree.add_sub_node(n2_ptr, n8);
-
-    BaseNode* n3_ptr = root->children[2].get();
-    tree.add_sub_node(n3_ptr, n9);
-
-    BaseNode* n4_ptr = root->children[3].get();
-    tree.add_sub_node(n4_ptr, n10);
-
-    BaseNode* n8_ptr = root->children[1]->children[1].get();
-    tree.add_sub_node(n8_ptr, n11);
+    tree.add_sub_node(root_node.get(), n1);
+    tree.add_sub_node(root_node.get(), n2);
+    tree.add_sub_node(root_node.get(), n3);
+    tree.add_sub_node(root_node.get(), n4);
+    tree.add_sub_node(n1.get(), n5);
+    tree.add_sub_node(n1.get(), n6);
+    tree.add_sub_node(n2.get(), n7);
+    tree.add_sub_node(n2.get(), n8);
+    tree.add_sub_node(n3.get(), n9);
+    tree.add_sub_node(n4.get(), n10);
+    tree.add_sub_node(n8.get(), n11);
 
     return tree;
 }
@@ -208,25 +184,16 @@ Tree create_string_tree() {
     auto n3 = std::make_shared<Node<std::string>>("node1");
     auto n4 = std::make_shared<Node<std::string>>("node4");
     auto n5 = std::make_shared<Node<std::string>>("node7");
-    auto n6 = std::make_shared<Node<std::string>>("node6");
-    auto n7 = std::make_shared<Node<std::string>>("node2");
+    auto n6 = std::make_shared<Node<std::string>>("node2");
+    auto n7 = std::make_shared<Node<std::string>>("node6");
 
-    BaseNode* root = tree.get_root();
-    tree.add_sub_node(root, n1);
-    tree.add_sub_node(root, n2);
-
-    BaseNode* n1_ptr = root->children[0].get();
-    tree.add_sub_node(n1_ptr, n3);
-    tree.add_sub_node(n1_ptr, n4);
-
-    BaseNode* n2_ptr = root->children[1].get();
-    tree.add_sub_node(n2_ptr, n5);
-
-    BaseNode* n5_ptr = root->children[1]->children[0].get();
-    tree.add_sub_node(n5_ptr, n6);
-
-    BaseNode* n3_ptr = root->children[0]->children[0].get();
-    tree.add_sub_node(n3_ptr, n7);
+    tree.add_sub_node(root_node.get(), n1);
+    tree.add_sub_node(root_node.get(), n2);
+    tree.add_sub_node(n1.get(), n3);
+    tree.add_sub_node(n1.get(), n4);
+    tree.add_sub_node(n2.get(), n5);
+    tree.add_sub_node(n2.get(), n6);
+    tree.add_sub_node(n5.get(), n7);
 
     return tree;
 }
@@ -263,7 +230,8 @@ int main() {
     try {
         Tree heapTree = stringTree.myHeap();
         demonstrate_tree(heapTree);
-    } catch (const std::exception& e) {
+    }
+    catch (const std::exception& e) {
         std::cerr << "Exception: " << e.what() << std::endl;
     }
 

@@ -17,8 +17,8 @@
  */
 class Tree {
 private:
-    std::shared_ptr<BaseNode> root;  ///< Pointer to the root node of the tree.
-    unsigned int maxDegree;          ///< Maximum number of children each node can have.
+    std::shared_ptr<BaseNode> root;  // Pointer to the root node of the tree.
+    unsigned int maxDegree;          // Maximum number of children each node can have.
 
 public:
     /**
@@ -62,7 +62,7 @@ public:
      */
     class BFSIterator {
     private:
-        std::queue<BaseNode*> queue;  ///< Queue to manage the BFS traversal.
+        std::queue<BaseNode*> queue;  // Queue to manage the BFS traversal.
 
     public:
         /**
@@ -120,7 +120,7 @@ public:
      */
     class DFSIterator {
     private:
-        std::stack<BaseNode*> next;  ///< Stack to manage the DFS traversal.
+        std::stack<BaseNode*> next;  // Stack to manage the DFS traversal.
 
     public:
         /**
@@ -166,8 +166,8 @@ public:
      */
     class PreOrderIterator {
     private:
-        std::stack<BaseNode*> next;  ///< Stack to manage the pre-order traversal.
-        bool useDFS;  ///< Flag to determine whether to use DFS.
+        std::stack<BaseNode*> next;  // Stack to manage the pre-order traversal.
+        bool useDFS;  // Flag to determine whether to use DFS.
 
     public:
         /**
@@ -214,9 +214,9 @@ public:
      */
     class PostOrderIterator {
     private:
-        std::stack<std::pair<BaseNode*, bool>> stack;  ///< Stack to manage the post-order traversal.
-        std::stack<BaseNode*> dfsStack;  ///< Stack to manage DFS traversal.
-        bool useDFS;  ///< Flag to determine whether to use DFS.
+        std::stack<std::pair<BaseNode*, bool>> stack;  // Stack to manage the post-order traversal.
+        std::stack<BaseNode*> dfsStack;  // Stack to manage DFS traversal.
+        bool useDFS;  // Flag to determine whether to use DFS.
 
         /**
          * @brief Helper method to expand the stack for post-order traversal.
@@ -268,9 +268,9 @@ public:
      */
     class InOrderIterator {
     private:
-        std::stack<BaseNode*> next;  ///< Stack to manage the in-order traversal.
-        std::stack<bool> visited;  ///< Stack to manage the visited state of nodes.
-        bool useDFS;  ///< Flag to determine whether to use DFS.
+        std::stack<BaseNode*> next;  // Stack to manage the in-order traversal.
+        std::stack<bool> visited;  // Stack to manage the visited state of nodes.
+        bool useDFS;  // Flag to determine whether to use DFS.
 
         /**
          * @brief Helper method to push left children onto the stack for in-order traversal.
@@ -321,11 +321,18 @@ public:
 
     /**
      * @brief Stream insertion operator to print the tree.
+     *
+     * This function needs to be a friend function because it requires access to the
+     * private and protected members of the Tree class in order to properly traverse
+     * and print the tree's structure. As a friend, it is granted access to these
+     * members, enabling it to perform its task effectively.
+     *
      * @param os Output stream.
      * @param tree The tree to print.
      * @return Reference to the output stream.
      */
     friend std::ostream& operator<<(std::ostream& os, const Tree& tree);
+
 
     /**
      * @brief Method to convert the tree into a min-heap.

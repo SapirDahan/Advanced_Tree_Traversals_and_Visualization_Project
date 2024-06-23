@@ -17,7 +17,6 @@ Tree::Tree(unsigned int degree) : root(nullptr), maxDegree(degree) {}
 
 // Destructor
 Tree::~Tree() {
-    // The shared_ptr will automatically manage the memory of the nodes
 }
 
 // Method to set the root node of the tree
@@ -36,11 +35,13 @@ void Tree::add_sub_node(BaseNode* parent, std::shared_ptr<BaseNode> child) {
         // Ensure the parent node does not exceed the maximum degree
         if (parent->children.size() < maxDegree) {
             parent->add_child(child);
-        } else {
+        }
+        else {
             // Throw an error if adding the child would exceed maxDegree
             throw std::runtime_error("Error: Cannot add child, maxDegree exceeded for parent node!");
         }
-    } else {
+    }
+    else {
         // Throw an error if the parent or child node is null
         throw std::runtime_error("Error: Parent or child node is null!");
     }
@@ -68,7 +69,8 @@ Tree::BFSIterator& Tree::BFSIterator::operator++() {
     for (auto& child : children) {
         if (child != nullptr) {
             queue.push(child.get());  // Add each non-null child to the queue
-        } else {
+        }
+        else {
             // Throw an error if a null or invalid child is encountered
             throw std::runtime_error("Error: Encountered null or invalid child node!");
         }
@@ -101,6 +103,7 @@ Tree::BFSIterator Tree::end() const {
     return end_bfs();
 }
 
+
 // DFSIterator implementations
 
 // Constructor initializes the iterator with the root node
@@ -125,7 +128,8 @@ Tree::DFSIterator& Tree::DFSIterator::operator++() {
     for (auto it = children.rbegin(); it != children.rend(); ++it) {
         if (*it != nullptr) {
             next.push(it->get());
-        } else {
+        }
+        else {
             // Throw an error if a null or invalid child is encountered
             throw std::runtime_error("Error: Encountered null or invalid child node!");
         }
@@ -147,6 +151,7 @@ Tree::DFSIterator Tree::begin_dfs() const {
 Tree::DFSIterator Tree::end_dfs() const {
     return DFSIterator(nullptr);  // Return a DFSIterator representing the end
 }
+
 
 // PreOrderIterator implementations
 
@@ -172,7 +177,8 @@ Tree::PreOrderIterator& Tree::PreOrderIterator::operator++() {
     for (auto it = children.rbegin(); it != children.rend(); ++it) {
         if (*it != nullptr) {
             next.push(it->get());
-        } else {
+        }
+        else {
             // Throw an error if a null or invalid child is encountered
             throw std::runtime_error("Error: Encountered null or invalid child node!");
         }
@@ -203,7 +209,9 @@ Tree::PostOrderIterator::PostOrderIterator(BaseNode* root, bool useDFS) : useDFS
         if (root) {
             dfsStack.push(root);  // Add root to the DFS stack if it is not null
         }
-    } else {
+    }
+
+    else {
         if (root) {
             stack.push({root, false});  // Add root to the stack if it is not null
             expandTop();  // Expand the stack to process the first node
@@ -219,15 +227,18 @@ void Tree::PostOrderIterator::expandTop() {
             stack.pop();
             dfsStack.push(node);  // Push the node to the DFS stack
             break;
-        } else {
+        }
+        else {
             stack.pop();
             stack.push({node, true});  // Mark the node as visited
             auto& children = node->children;
+
             // Add children to the stack in reverse order
             for (auto it = children.rbegin(); it != children.rend(); ++it) {
                 if (*it != nullptr) {
                     stack.push({it->get(), false});
-                } else {
+                }
+                else {
                     // Throw an error if a null or invalid child is encountered
                     throw std::runtime_error("Error: Encountered null or invalid child node!");
                 }
@@ -256,7 +267,9 @@ Tree::PostOrderIterator& Tree::PostOrderIterator::operator++() {
                 throw std::runtime_error("Error: Encountered null or invalid child node!");
             }
         }
-    } else {
+    }
+
+    else {
         dfsStack.pop();  // Remove the current node from the stack
         expandTop();  // Process the next node in the stack
     }
@@ -265,11 +278,7 @@ Tree::PostOrderIterator& Tree::PostOrderIterator::operator++() {
 
 // Comparison operator checks if the iterator is not at the end
 bool Tree::PostOrderIterator::operator!=(const PostOrderIterator& other) const {
-    if (useDFS) {
-        return !dfsStack.empty();  // The iterators are not equal if the DFS stack is not empty
-    } else {
-        return !dfsStack.empty();  // The iterators are not equal if the stack is not empty
-    }
+    return !dfsStack.empty();  // The iterators are not equal if the DFS stack is not empty
 }
 
 // Returns an iterator to the beginning of the post-order traversal
@@ -282,6 +291,7 @@ Tree::PostOrderIterator Tree::end_post_order() const {
     return PostOrderIterator(nullptr, maxDegree > 2);  // Use DFS if maxDegree > 2
 }
 
+
 // InOrderIterator implementations
 
 // Constructor initializes the iterator with the root node and DFS flag
@@ -289,7 +299,9 @@ Tree::InOrderIterator::InOrderIterator(BaseNode* root, bool useDFS) : useDFS(use
     if (root) {
         if (useDFS) {
             next.push(root);  // Add root to the stack if it is not null
-        } else {
+        }
+
+        else {
             pushLeft(root);  // Push all left children of the root to the stack
         }
     }
@@ -302,7 +314,9 @@ void Tree::InOrderIterator::pushLeft(BaseNode* node) {
         visited.push(false);  // Mark the current node as not visited
         if (!node->children.empty()) {
             node = node->children[0].get();  // Move to the leftmost child
-        } else {
+        }
+
+        else {
             break;  // Stop if the current node has no children
         }
     }
@@ -325,12 +339,14 @@ Tree::InOrderIterator& Tree::InOrderIterator::operator++() {
         for (auto it = children.rbegin(); it != children.rend(); ++it) {
             if (*it != nullptr) {
                 next.push(it->get());
-            } else {
+            }
+            else {
                 // Throw an error if a null or invalid child is encountered
                 throw std::runtime_error("Error: Encountered null or invalid child node!");
             }
         }
-    } else {
+    }
+    else {
         if (!currentNode->children.empty()) {
             std::vector<std::shared_ptr<BaseNode>>& children = currentNode->children;
             // Push all left children of the next child onto the stack
@@ -357,7 +373,18 @@ Tree::InOrderIterator Tree::end_in_order() const {
     return InOrderIterator(nullptr, maxDegree > 2);  // Use DFS if maxDegree > 2
 }
 
-// Stream insertion operator for Tree
+/**
+ * @brief Stream insertion operator to print the tree.
+ *
+ * This function needs to be a friend function because it requires access to the
+ * private and protected members of the Tree class in order to properly traverse
+ * and print the tree's structure. As a friend, it is granted access to these
+ * members, enabling it to perform its task effectively.
+ *
+ * @param os Output stream.
+ * @param tree The tree to print.
+ * @return Reference to the output stream.
+ */
 std::ostream& operator<<(std::ostream& os, const Tree& tree) {
     GUI gui;
     gui.renderTree(tree);  // Use GUI to render the tree
@@ -390,14 +417,24 @@ Tree Tree::myHeap() const {
     for (BaseNode* node : nodes) {
         if (auto strNode = dynamic_cast<Node<std::string>*>(node)) {
             newNodes.push_back(std::make_shared<Node<std::string>>(strNode->value));
-        } else if (auto intNode = dynamic_cast<Node<int>*>(node)) {
+        }
+        else if (auto intNode = dynamic_cast<Node<int>*>(node)) {
             newNodes.push_back(std::make_shared<Node<int>>(intNode->value));
-        } else if (auto doubleNode = dynamic_cast<Node<double>*>(node)) {
+        }
+        else if (auto doubleNode = dynamic_cast<Node<double>*>(node)) {
             newNodes.push_back(std::make_shared<Node<double>>(doubleNode->value));
-        } else if (auto complexNode1 = dynamic_cast<Node<Complex<int, double>>*>(node)) {
+        }
+        else if (auto complexNode1 = dynamic_cast<Node<Complex<int, double>>*>(node)) {
             newNodes.push_back(std::make_shared<Node<Complex<int, double>>>(complexNode1->value));
-        } else if (auto complexNode2 = dynamic_cast<Node<Complex<double, int>>*>(node)) {
+        }
+        else if (auto complexNode2 = dynamic_cast<Node<Complex<double, int>>*>(node)) {
             newNodes.push_back(std::make_shared<Node<Complex<double, int>>>(complexNode2->value));
+        }
+        else if (auto complexNode3 = dynamic_cast<Node<Complex<double, double>>*>(node)) {
+            newNodes.push_back(std::make_shared<Node<Complex<double, double>>>(complexNode3->value));
+        }
+        else if (auto complexNode4 = dynamic_cast<Node<Complex<int, int>>*>(node)) {
+            newNodes.push_back(std::make_shared<Node<Complex<int, int>>>(complexNode4->value));
         }
 
     }
@@ -429,7 +466,6 @@ Tree Tree::myHeap() const {
         }
     }
 
-    // No need to release ownership of nodes to the heapTree since shared_ptr manages memory
-
+    // Return the heap
     return heapTree;
 }

@@ -17,7 +17,7 @@
 #include "Complex.hpp"
 
 /**
- * @class BaseNode
+ * @class BaseNode - abstract class
  * @brief A base class representing a generic node in a tree.
  */
 class BaseNode {
@@ -61,7 +61,7 @@ public:
 template <typename T>
 class Node : public BaseNode {
 public:
-    T value; ///< The value stored in the node.
+    T value; // The value stored in the node.
 
     /**
      * @brief Constructor to initialize the node with a value.
@@ -77,9 +77,13 @@ public:
     std::string get_value() const override {
         if constexpr (std::is_same_v<T, std::string>) {
             return value;  // Return the string value
-        } else if constexpr (std::is_integral_v<T>) {
+        }
+
+        else if constexpr (std::is_integral_v<T>) {
             return std::to_string(value);  // Convert and return the integral value as a string
-        } else if constexpr (std::is_floating_point_v<T>) {
+        }
+
+        else if constexpr (std::is_floating_point_v<T>) {
             // Convert the floating-point value to a string with fixed precision
             std::ostringstream out;
             out << std::fixed << std::setprecision(2) << value;
@@ -88,9 +92,13 @@ public:
             str.erase(str.find_last_not_of('0') + 1, std::string::npos);
             str.erase(str.find_last_not_of('.') + 1, std::string::npos);
             return str;
-        } else if constexpr (std::is_same_v<T, Complex<typename T::real_type, typename T::imag_type>>) {
+        }
+
+        else if constexpr (std::is_same_v<T, Complex<typename T::real_type, typename T::imag_type>>) {
             return value.to_string();  // Return the complex number as a string
-        } else {
+        }
+
+        else {
             throw std::runtime_error("Unsupported type");  // Throw an error if the type is unsupported
         }
     }
@@ -102,10 +110,12 @@ public:
     unsigned int get_ascii_value() const override {
         std::string str_value = get_value();  // Get the value of the node as a string
         unsigned int ascii_sum = 0;
+
         // Calculate the sum of ASCII values of all characters in the string
         for (char c : str_value) {
             ascii_sum += static_cast<unsigned int>(c);
         }
+
         return ascii_sum;  // Return the ASCII sum
     }
 };

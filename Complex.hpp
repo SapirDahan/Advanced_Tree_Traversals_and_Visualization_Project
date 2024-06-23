@@ -22,8 +22,8 @@ public:
     using imag_type = ImagType;
 
 private:
-    RealType real;  ///< Real part of the complex number.
-    ImagType imag;  ///< Imaginary part of the complex number.
+    RealType real;  // Real part of the complex number.
+    ImagType imag;  // Imaginary part of the complex number.
 
 public:
     /**
@@ -51,9 +51,5 @@ public:
     unsigned int get_ascii_value() const;
 };
 
-// Explicit template instantiation declarations for common types
-extern template class Complex<int, int>;
-extern template class Complex<int, double>;
-extern template class Complex<double, double>;
-extern template class Complex<double, int>;
+
 

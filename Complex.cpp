@@ -41,15 +41,21 @@ std::string Complex<RealType, ImagType>::to_string() const {
  */
 template <typename RealType, typename ImagType>
 unsigned int Complex<RealType, ImagType>::get_ascii_value() const {
+
+    // Make that complex into a string
     std::string str_value = to_string();
+
     unsigned int ascii_sum = 0;
+
+    // Go over all the chars
     for (char c : str_value) {
         ascii_sum += static_cast<unsigned int>(c);  // Sum up ASCII values of all characters in the string
     }
+
     return ascii_sum;
 }
 
-// Explicit template instantiation definitions for common types
+// Explicit template instantiation definitions
 template class Complex<int, int>;
 template class Complex<int, double>;
 template class Complex<double, double>;
