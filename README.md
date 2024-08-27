@@ -3,7 +3,7 @@
 <!-- ID: 325732972 -->
 <!-- * Mail: sapirdahan2003@gmail.com -->
 
-# Tree Traversal and Manipulation Project
+# Advanced Tree Traversals and Visualization Project
 
 ## Author: Sapir Dahan
 - **ID**: 325732972
